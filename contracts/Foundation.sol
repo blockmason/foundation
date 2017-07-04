@@ -284,7 +284,7 @@ contract Foundation {
    /**
 	@notice Return the FoundationID that is associated with the address.
         @param _addr the address to lookup
-        @returns The FoundationID
+        @return The FoundationID
   */
 
   function resolveToName(address _addr) nameExists(addrToName[_addr]) nameActive(addrToName[_addr]) constant returns (bytes32) {
@@ -294,7 +294,7 @@ contract Foundation {
    /**
 	@notice Returns an array of addresses associated with a FoundationID
         @param _name The name of the FoundationID to lookup
-        @returns an array of addresses associated with the FoundationID
+        @return an array of addresses associated with the FoundationID
   */
 
   function resolveToAddresses(bytes32 _name) nameExists(_name) nameActive(_name) constant returns (address[]) {
@@ -304,7 +304,7 @@ contract Foundation {
    /**
 	@notice allows the admin of the contract with withdraw ethereum received through FoundationID extension payments.
         @param amount the amount to withdraw in wei
-        @returns success if operation was successful or not
+        @return success if operation was successful or not
   */
 
   function withdraw(uint amount) isAdmin returns (bool success) {
@@ -317,7 +317,7 @@ contract Foundation {
 	@notice allows owner of FoundationID to withdraw ethereum from their deposited amount
         @param _name The FoundationID name
         @param amount The amount in wei to withdraw
-        @returns success if operation was successful or not
+        @return success if operation was successful or not
   */
 
   function withdrawDeposit(bytes32 _name, uint amount) isOwner(_name) returns (bool success) {
