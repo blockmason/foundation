@@ -10,7 +10,7 @@ contract('Harmony', function(accounts) {
     var name1 = "timtime2";
     var weiToExtend = 0;
 
-    it("create a new id; extend its active period; check that it's unified", function() {
+  /*  it("create a new id; extend its active period; check that it's unified", function() {
         var h;
         Harmony.at(zeroWeiHarmony).then(function(instance) {
             h = instance;
