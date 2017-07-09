@@ -75,6 +75,26 @@ contract('Foundation', function(accounts) {
             assert.equal(web3.toAscii(res).replace(/\u0000/g, ''), name1, "account2 doesn't resolve to name");
         });
     });
+
+    it("checks that two addresses are linked to the same id", function() {
+        var ns;
+        return Foundation.new(account6, weiToExtend).then(function(instance) {
+            u = instance;
+            return u.createId(name2, {from: account1, value: weiToExtend});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account2, {from: account1});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account2});
+        }).then(function(tx) {
+            return u.areSameId.call(account1, account2);
+        }).then(function(res) {
+            assert.equal(res.valueOf(), true, "account1 and account2 aren't added to id");
+        //    return u.areSameId.call(account1, account3);
+       // }).catch(function(error) {
+           // console.log(error.toString().split("\n")[0]);
+         //   assert.equal(error.toString().split("\n")[0], "Error: VM Exception while executing eth_call: invalid opcode", error);
+        });
+    });
 });
 
 

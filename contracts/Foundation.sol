@@ -72,7 +72,7 @@ contract Foundation {
 
 
    /**
-	@notice Checks if a name is the owner of the address
+	@notice Checks if a name is the owner of the foundationid
 	@param _name The name of the ID
   */
 
@@ -84,7 +84,7 @@ contract Foundation {
   }
 
    /**
-	@notice Checks if a name is the owner of the address
+	@notice Checks if a name is the owner of the contract
   */
 
   modifier isAdmin() {
@@ -118,6 +118,7 @@ contract Foundation {
 	@notice Checks whether an address is associated with a FoundationID
 	@param _addr The address of the to check
 	@param _name The name of the FoundationID
+        @return returns true of _addr and _name are associated with each other
 
   */
 
@@ -203,6 +204,7 @@ contract Foundation {
 
    /**
 	@notice create a new FoundationID.
+        @dev private function called by createId
         @param _name the name of the new FoundationID
         @param _addr The address of the creator.
   */
@@ -255,6 +257,7 @@ contract Foundation {
 
    /**
 	@notice Deactivate an address associated with your FoundationID
+        @dev implements ability to require and check for multiple addresses before deactiviating an address.
         @param _addr the address to deactivate.
   */
 
@@ -281,11 +284,32 @@ contract Foundation {
     hi.addrToDeactivate.length = 0;
   }
 
+  /**
+	@notice Return whether two addresses are of the same FoundationId
+        @param _addr1 the first address to compare
+        @param _addr2 the second address to compare
+        @return true if the two addresses are of the same FoundationID
+
+   */
+
+  function areSameId(address _addr1, address _addr2) constant returns (bool) {
+    bytes32 name1 = resolveToName(_addr1);
+    bytes32 name2 = resolveToName(_addr2);
+    if (compare(name1, name2) == 0 ) {
+      return true;
+    }
+    //can't return false as it will throw when the modifiers of resolveToName are run
+
+  }
+
+
+
    /**
 	@notice Return the FoundationID that is associated with the address.
         @param _addr the address to lookup
         @return The FoundationID
   */
+
 
   function resolveToName(address _addr) nameExists(addrToName[_addr]) nameActive(addrToName[_addr]) constant returns (bytes32) {
     return addrToName[_addr];
@@ -329,6 +353,7 @@ contract Foundation {
   //////////////////////////////////
   /////  helpers
   /////////////////////////////////
+
   function compare(bytes32 a, bytes32 b) private constant returns (int) {
     //    bytes memory a = bytes(_a);
     //    bytes memory b = bytes(_b);
