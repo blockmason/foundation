@@ -13,19 +13,20 @@ contract Foundation {
   uint adminBalanceWei;
   uint8 maxNumToDeactivateAddr;
   uint extensionPeriod = 60*60*24*365;
+  //  uint maxAddresses = 50;
 
   struct FoundationId {
     bool initialized;
-    address[] ownedAddresses;
+    address[50] ownedAddresses;
     address pendingOwned; //an address requiring confirmation to add to owned
     uint activeUntil; //the date/time when this id deactivates
     uint depositBalanceWei; //how much deposit this owner has
     bytes32 name;
-    uint8 numToDeactivateAddr; //how many addresses needed to deactivate address
+    // uint8 numToDeactivateAddr; //how many addresses needed to deactivate address
     mapping ( address => bool ) activeAddr;
     //requests to deactivate; goes diswantedAddr => addresses that diswant it
-    mapping ( address => address[] ) deactivateReqs;
-    address[] addrToDeactivate;
+    // mapping ( address => address[] ) deactivateReqs;
+    // address[] addrToDeactivate;
   }
 
   mapping ( address => bytes32 )  addrToName;
@@ -38,7 +39,7 @@ contract Foundation {
 
 
   modifier nameActive(bytes32 _name) {
-    if ( nameToId[_name].activeUntil < now ) throw;
+    if ( nameToId[_name].activeUntil < now ) revert();
     _;
   }
 
@@ -49,14 +50,14 @@ contract Foundation {
   */
 
   modifier isNewNameAddrPair(bytes32 _name, address _addr) {
-    if ( idEq(_name, addrToName[_addr]) ) throw; //throw error if pair exists
+    if ( idEq(_name, addrToName[_addr]) ) revert(); //throw error if pair exists
     _;
   }
 
 
 
   modifier isNewName(bytes32 _name) {
-    if ( nameToId[_name].initialized ) throw;
+    if ( nameToId[_name].initialized ) revert();
     _;
   }
 
@@ -66,7 +67,7 @@ contract Foundation {
   */
 
   modifier nameExists(bytes32 _name) {
-    if ( ! nameToId[_name].initialized ) throw;
+    if ( ! nameToId[_name].initialized ) revert();
     _;
   }
 
@@ -78,8 +79,8 @@ contract Foundation {
 
   modifier isOwner(bytes32 _name) {
     //msg.sender should be one of the addresses that owns the master id .
-    if ( compare(_name, addrToName[msg.sender]) != 0 ) throw;
-    if ( !nameToId[_name].activeAddr[msg.sender] ) throw;
+    if ( compare(_name, addrToName[msg.sender]) != 0 ) revert();
+    if ( !nameToId[_name].activeAddr[msg.sender] ) revert();
     _;
   }
 
@@ -88,12 +89,12 @@ contract Foundation {
   */
 
   modifier isAdmin() {
-    if ( compare(addrToName[msg.sender], admin) != 0 ) throw;
+    if ( compare(addrToName[msg.sender], admin) != 0 ) revert();
     _;
   }
 
   modifier extender() {
-    if ( msg.value != weiToExtend ) throw;
+    if ( msg.value != weiToExtend ) revert();
     adminBalanceWei += msg.value;
     _;
   }
@@ -113,6 +114,26 @@ contract Foundation {
     weiToExtend = _weiToExtend;
     maxNumToDeactivateAddr = 1;
   }
+
+
+   /**
+	@notice Finds next available slot in IDs address array
+
+  */
+
+
+  function findFree(bytes32 _name) nameActive(_name) constant returns (uint) {
+    uint freeIndex=nameToId[_name].ownedAddresses.length; //past the last array slot
+     for (uint i = 0; i < nameToId[_name].ownedAddresses.length; i ++) {
+       if (nameToId[_name].ownedAddresses[i]==0) {
+         freeIndex=i;
+         break;
+       }
+     }
+    return freeIndex;
+  }
+
+
 
    /**
 	@notice Checks whether an address is associated with a FoundationID
@@ -153,7 +174,7 @@ contract Foundation {
   //msg.value
   //adds a year to the end of now, if the balance is right
   function extendIdOneYear(bytes32 _name) payable extender nameExists(_name) {
-    if ( msg.value != weiToExtend ) throw;
+    if ( msg.value != weiToExtend ) revert();
     adminBalanceWei += msg.value;
     nameToId[_name].activeUntil = now + extensionPeriod;
   }
@@ -176,17 +197,17 @@ contract Foundation {
     return nameToId[_name].depositBalanceWei;
   }
 
-   /**
+   /*
 	@notice Change the number of addresses associated with FoundationID required to deactivate another address.
 	@param _name the name of the FoundationID.
         @param newNumToD the new number of addresses required to deactivate.
-  */
+
 
   function alterNumToDeactivate(bytes32 _name, uint8 newNumToD) isOwner(_name) {
-    if ( newNumToD < 2 ) throw;
-    if ( newNumToD > maxNumToDeactivateAddr ) throw;
+    if ( newNumToD < 2 ) revert();
+    if ( newNumToD > maxNumToDeactivateAddr ) revert();
     nameToId[_name].numToDeactivateAddr = newNumToD;
-  }
+  }*/
 
   function initNameAddrPair(bytes32 _name, address _addr) private {
     addrToName[_addr] = _name;
@@ -196,8 +217,13 @@ contract Foundation {
 	@dev Start creating a new FoundationID
   */
 
+
+  ///FIX FIX FIX
+
   function linkAddrToId(bytes32 _name, address _addr) private {
-    nameToId[_name].ownedAddresses.push(_addr);
+    uint freeSlot = findFree(_name);
+    require(freeSlot<50);
+    nameToId[_name].ownedAddresses[freeSlot] = _addr;
     nameToId[_name].activeAddr[_addr] = true;
   }
 
@@ -216,7 +242,7 @@ contract Foundation {
     nameToId[_name].initialized = true;
     nameToId[_name].activeUntil = _activeUntil;
     nameToId[_name].name = _name;
-    nameToId[_name].numToDeactivateAddr = 1;
+    //nameToId[_name].numToDeactivateAddr = 1;
     nameToId[_name].depositBalanceWei = 0;
     linkAddrToId(_name, _addr);
   }
@@ -249,17 +275,38 @@ contract Foundation {
   */
 
   function confirmPendingUnification(bytes32 _name) nameActive(_name) {
-    if ( nameToId[_name].pendingOwned != msg.sender ) throw;
+    if ( nameToId[_name].pendingOwned != msg.sender ) revert();
     initNameAddrPair(_name, msg.sender);
     linkAddrToId(_name, msg.sender);
     nameToId[_name].pendingOwned = 0;
   }
 
-   /**
+
+  function findAddr(bytes32 _name, address _addr) constant returns(uint) {
+    uint foundAddrIndex;
+    for (uint i = 0; i <= nameToId[_name].ownedAddresses.length; i ++) {
+       if (nameToId[_name].ownedAddresses[i]==_addr) {
+         foundAddrIndex=i;
+         return foundAddrIndex;
+       }
+     }
+    revert(); // something went wrong if it's not found but passed previous modifiers
+  }
+
+  ///NEED TO ADD some safety to prevent all addresses from being deleted
+
+  function deleteAddr(address _addr) nameExists(addrToName[_addr]) isOwner(addrToName[_addr]){
+    bytes32 idName=addrToName[msg.sender];
+    FoundationId foundId = nameToId[idName];
+    uint addrIndex=findAddr(idName, _addr);
+    foundId.ownedAddresses[addrIndex]=0;
+  }
+
+   /*
 	@notice Deactivate an address associated with your FoundationID
         @dev implements ability to require and check for multiple addresses before deactiviating an address.
         @param _addr the address to deactivate.
-  */
+
 
   function requestDeactivate(address _addr) nameExists(addrToName[_addr]) isOwner(addrToName[_addr]) {
     FoundationId hi = nameToId[addrToName[_addr]];
@@ -283,6 +330,7 @@ contract Foundation {
     }
     hi.addrToDeactivate.length = 0;
   }
+  */
 
   /**
 	@notice Return whether two addresses are of the same FoundationId
@@ -299,7 +347,6 @@ contract Foundation {
       return true;
     }
     //can't return false as it will throw when the modifiers of resolveToName are run
-
   }
 
 
@@ -321,7 +368,7 @@ contract Foundation {
         @return an array of addresses associated with the FoundationID
   */
 
-  function resolveToAddresses(bytes32 _name) nameExists(_name) nameActive(_name) constant returns (address[]) {
+  function resolveToAddresses(bytes32 _name) nameExists(_name) nameActive(_name) constant returns (address[50]) {
     return nameToId[_name].ownedAddresses;
   }
 
@@ -332,7 +379,7 @@ contract Foundation {
   */
 
   function withdraw(uint amount) isAdmin returns (bool success) {
-    if ( adminBalanceWei < amount ) throw;
+    if ( adminBalanceWei < amount ) revert();
     adminBalanceWei -= amount;
     return msg.sender.send(amount);
   }
@@ -345,7 +392,7 @@ contract Foundation {
   */
 
   function withdrawDeposit(bytes32 _name, uint amount) isOwner(_name) returns (bool success) {
-    if ( nameToId[_name].depositBalanceWei < amount ) throw;
+    if ( nameToId[_name].depositBalanceWei < amount ) revert();
     nameToId[_name].depositBalanceWei -= amount;
     return msg.sender.send(amount);
   }

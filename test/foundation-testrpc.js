@@ -1,5 +1,6 @@
 var Foundation = artifacts.require("./Foundation.sol");
 
+
 contract('Foundation', function(accounts) {
     var account1 = accounts[0];
     var account2 = accounts[1];
@@ -89,10 +90,61 @@ contract('Foundation', function(accounts) {
             return u.areSameId.call(account1, account2);
         }).then(function(res) {
             assert.equal(res.valueOf(), true, "account1 and account2 aren't added to id");
-        //    return u.areSameId.call(account1, account3);
-       // }).catch(function(error) {
-           // console.log(error.toString().split("\n")[0]);
-         //   assert.equal(error.toString().split("\n")[0], "Error: VM Exception while executing eth_call: invalid opcode", error);
+        });
+    });
+
+    it("creates an id, adds address and returns all addresses", function() {
+        var ns;
+        return Foundation.new(account6, weiToExtend).then(function(instance) {
+            u = instance;
+            return u.createId(name2, {from: account1, value: weiToExtend});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account2, {from: account1});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account2});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account3, {from: account2});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account3});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account4, {from: account3});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account4});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account5, {from: account4});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account5});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account6, {from: account5});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account6});
+        }).then(function(tx) {
+            return u.resolveToAddresses.call(name2);
+        }).then(function(addresses) {
+//            console.log(addresses);
+            assert.equal(addresses[0], account1, "index 0 does not equal " + account1);
+            assert.equal(addresses[1], account2, "index 1 does not equal " + account2);
+            assert.equal(addresses[2], account3, "index 2 does not equal " + account3);
+            assert.equal(addresses[3], account4, "index 3 does not equal " + account4);
+            assert.equal(addresses[4], account5, "index 4 does not equal " + account5);
+            assert.equal(addresses[5], account6, "index 5 does not equal " + account6);
+
+        });
+    });
+
+    it("checks that two addresses are linked to the same id", function() {
+        var ns;
+        return Foundation.new(account6, weiToExtend).then(function(instance) {
+            u = instance;
+            return u.createId(name2, {from: account1, value: weiToExtend});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account2, {from: account1});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account2});
+        }).then(function(tx) {
+            return u.areSameId.call(account1, account2);
+        }).then(function(res) {
+            assert.equal(res.valueOf(), true, "account1 and account2 aren't added to id");
         });
     });
 });
