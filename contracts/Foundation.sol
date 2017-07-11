@@ -377,10 +377,16 @@ contract Foundation {
     return nameToId[_name].ownedAddresses;
   }
 
+
+  function getAddrIndex(bytes32 _name, uint index) nameExists(_name) nameActive(_name) constant returns (address) {
+    require(index<nameToId[_name].ownedAddresses.length);
+    return nameToId[_name].ownedAddresses[index];
+  }
+
   ///needed because can't return dynamic addresses to external contracts
   ///allows for compatibility when dynamic array support is added
 
-
+  /*
   function get10Addr(bytes32 _name, uint indexStart) nameExists(_name) nameActive(_name) constant returns (address[10]) {
     address[10] memory tenAddr;
     for (uint i=0; i<10; i++) {
@@ -393,7 +399,7 @@ contract Foundation {
     }
     return tenAddr;
   }
-
+*/
      /**
 	@notice Gets length of address array for foundationId
         @param _name the name of the foundationid

@@ -187,7 +187,7 @@ contract('Foundation', function(accounts) {
         });
     });
 
-    it("it successfully gets 10 addr list", function() {
+    it("it successfully gets addr at index", function() {
         var ns;
         return Foundation.new(account6, weiToExtend).then(function(instance) {
             u = instance;
@@ -197,12 +197,11 @@ contract('Foundation', function(accounts) {
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
-            return u.get10Addr.call(name2, 0);
-        }).then(function(addresses) {
-           assert.equal(addresses.length, 10, "not getting proper length");
+            return u.getAddrIndex.call(name2, 1);
+        }).then(function(address) {
+           assert.equal(address, account2, "addrindex not working");
         });
     });
-
 });
 
 
