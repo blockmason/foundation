@@ -311,7 +311,7 @@ contract Foundation {
   */
 
 
-  function findAddr(bytes32 _name, address _addr) constant returns(uint) private {
+  function findAddr(bytes32 _name, address _addr) private constant returns(uint)  {
     uint foundAddrIndex;
     for (uint i = 0; i <= nameToId[_name].ownedAddresses.length; i ++) {
        if (nameToId[_name].ownedAddresses[i]==_addr) {
