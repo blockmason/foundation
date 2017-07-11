@@ -99,6 +99,28 @@ contract Foundation {
     _;
   }
 
+  //can be written better
+
+
+  modifier hasTwoAddress(bytes32 _name) {
+    bool hasAddress1=false;
+    bool hasAddress2=false;
+    for (uint i = 0; i < nameToId[_name].ownedAddresses.length; i ++) {
+      if (nameToId[_name].ownedAddresses[i]!=0) {
+        if (hasAddress1) {
+          hasAddress2=true;
+          break;
+        }
+        else {
+          hasAddress1=true;
+        }
+      }
+    }
+    require(hasAddress1);
+    require(hasAddress2);
+    _;
+  }
+
 
    /**
 	@notice Creates the contract
@@ -293,44 +315,14 @@ contract Foundation {
     revert(); // something went wrong if it's not found but passed previous modifiers
   }
 
-  ///NEED TO ADD some safety to prevent all addresses from being deleted
 
-  function deleteAddr(address _addr) nameExists(addrToName[_addr]) isOwner(addrToName[_addr]){
+
+  function deleteAddr(address _addr) nameExists(addrToName[_addr]) isOwner(addrToName[_addr]) hasTwoAddress(addrToName[_addr]) {
     bytes32 idName=addrToName[msg.sender];
     FoundationId foundId = nameToId[idName];
     uint addrIndex=findAddr(idName, _addr);
     foundId.ownedAddresses[addrIndex]=0;
   }
-
-   /*
-	@notice Deactivate an address associated with your FoundationID
-        @dev implements ability to require and check for multiple addresses before deactiviating an address.
-        @param _addr the address to deactivate.
-
-
-  function requestDeactivate(address _addr) nameExists(addrToName[_addr]) isOwner(addrToName[_addr]) {
-    FoundationId hi = nameToId[addrToName[_addr]];
-    if ( hi.deactivateReqs[_addr].length == 0 ) {
-      hi.deactivateReqs[_addr].push(msg.sender);
-      hi.addrToDeactivate.push(_addr);
-      return;
-    }
-    if ( member(msg.sender, hi.deactivateReqs[_addr]) ) {
-      return;
-    }
-    if ( hi.deactivateReqs[_addr].length + 1 != hi.numToDeactivateAddr ) {
-      hi.deactivateReqs[_addr].push(msg.sender);
-      hi.addrToDeactivate.push(_addr);
-      return;
-    }
-    //otherwise, we need to deactivate and delete all deactivation requests
-    hi.activeAddr[_addr] = false;
-    for (uint i=0; i < hi.addrToDeactivate.length; i++) {
-      hi.deactivateReqs[hi.addrToDeactivate[i]].length = 0;
-    }
-    hi.addrToDeactivate.length = 0;
-  }
-  */
 
   /**
 	@notice Return whether two addresses are of the same FoundationId

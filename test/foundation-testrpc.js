@@ -132,7 +132,7 @@ contract('Foundation', function(accounts) {
         });
     });
 
-    it("checks that two addresses are linked to the same id", function() {
+    it("adds and deletes an address", function() {
         var ns;
         return Foundation.new(account6, weiToExtend).then(function(instance) {
             u = instance;
@@ -142,11 +142,31 @@ contract('Foundation', function(accounts) {
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
-            return u.areSameId.call(account1, account2);
-        }).then(function(res) {
-            assert.equal(res.valueOf(), true, "account1 and account2 aren't added to id");
+             return u.resolveToAddresses.call(name2);
+        }).then(function(addresses) {
+            assert.equal(addresses[1], account2, "account2 not added");
+            return u.deleteAddr(account2);
+        }).then(function(tx) {
+           return u.resolveToAddresses.call(name2);
+        }).then(function(addresses) {
+            //console.log(addresses);
+            assert.equal(addresses[1], 0, "account2 not deleted successfully");
         });
     });
+
+    it("tries to delete address when only 1 address exists", function() {
+        var ns;
+        return Foundation.new(account6, weiToExtend).then(function(instance) {
+            u = instance;
+            return u.createId(name2, {from: account1, value: weiToExtend});
+        }).then(function(tx) {
+            return u.deleteAddr(account1);
+        }).catch(function(error) {
+//            console.log(account1);
+            assert.equal(error.toString(), "Error: VM Exception while processing transaction: invalid opcode", "Problem while deleting last remaining address");
+        });
+    });
+
 });
 
 
