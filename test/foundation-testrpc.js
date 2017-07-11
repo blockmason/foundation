@@ -171,6 +171,38 @@ contract('Foundation', function(accounts) {
         });
     });
 
+    it("adds addresses and gets correct length", function() {
+        var ns;
+        return Foundation.new(account6, weiToExtend).then(function(instance) {
+            u = instance;
+            return u.createId(name2, {from: account1, value: weiToExtend});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account2, {from: account1});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account2});
+        }).then(function(tx) {
+            return u.getAddrLength(name2);
+        }).then(function(addrlength) {
+            assert.equal(addrlength.toNumber(), 2, "not getting proper length");
+        });
+    });
+
+    it("it successfully gets 10 addr list", function() {
+        var ns;
+        return Foundation.new(account6, weiToExtend).then(function(instance) {
+            u = instance;
+            return u.createId(name2, {from: account1, value: weiToExtend});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account2, {from: account1});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account2});
+        }).then(function(tx) {
+            return u.get10Addr.call(name2, 0);
+        }).then(function(addresses) {
+           assert.equal(addresses.length, 10, "not getting proper length");
+        });
+    });
+
 });
 
 

@@ -377,6 +377,33 @@ contract Foundation {
     return nameToId[_name].ownedAddresses;
   }
 
+  ///needed because can't return dynamic addresses to external contracts
+  ///allows for compatibility when dynamic array support is added
+
+
+  function get10Addr(bytes32 _name, uint indexStart) nameExists(_name) nameActive(_name) constant returns (address[10]) {
+    address[10] memory tenAddr;
+    for (uint i=0; i<10; i++) {
+      if (i+indexStart < nameToId[_name].ownedAddresses.length) {
+        tenAddr[i]=nameToId[_name].ownedAddresses[i+indexStart];
+      }
+      else {
+        tenAddr[i]=0;
+      }
+    }
+    return tenAddr;
+  }
+
+     /**
+	@notice Gets length of address array for foundationId
+        @param _name the name of the foundationid
+        @return the number of addresses associated with a user
+  */
+
+  function getAddrLength(bytes32 _name) nameExists(_name) nameActive(_name) constant returns (uint) {
+    return nameToId[_name].ownedAddresses.length;
+  }
+
    /**
 	@notice allows the admin of the contract with withdraw ethereum received through FoundationID extension payments.
         @param amount the amount to withdraw in wei
