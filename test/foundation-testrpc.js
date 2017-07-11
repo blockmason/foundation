@@ -144,6 +144,7 @@ contract('Foundation', function(accounts) {
         }).then(function(tx) {
              return u.resolveToAddresses.call(name2);
         }).then(function(addresses) {
+//            console.log(addresses);
             assert.equal(addresses[1], account2, "account2 not added");
             return u.deleteAddr(account2);
         }).then(function(tx) {
@@ -160,6 +161,9 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToExtend});
         }).then(function(tx) {
+            return u.resolveToAddresses.call(name2);
+        }).then(function(addresses) {
+  //          console.log(addresses);
             return u.deleteAddr(account1);
         }).catch(function(error) {
 //            console.log(account1);

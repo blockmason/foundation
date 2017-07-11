@@ -13,10 +13,11 @@ contract Foundation {
   uint adminBalanceWei;
   uint8 maxNumToDeactivateAddr;
   uint extensionPeriod = 60*60*24*365;
+  //  uint addrSize=50;
 
   struct FoundationId {
     bool initialized;
-    address[50] ownedAddresses;
+    address[] ownedAddresses;
     address pendingOwned; //an address requiring confirmation to add to owned
     uint activeUntil; //the date/time when this id deactivates
     uint depositBalanceWei; //how much deposit this owner has
@@ -137,11 +138,11 @@ contract Foundation {
   }
 
 
-   /**
+   /*
 	@notice Finds next available index in IDs address array
         @param _name the foundationId to check
 
-  */
+
 
 
   function findFree(bytes32 _name) nameActive(_name) constant returns (uint) {
@@ -154,7 +155,7 @@ contract Foundation {
      }
     return freeIndex;
   }
-
+ */
 
 
    /**
@@ -244,9 +245,8 @@ contract Foundation {
 
 
   function linkAddrToId(bytes32 _name, address _addr) private {
-    uint freeIndex = findFree(_name);
-    require(freeIndex<50);
-    nameToId[_name].ownedAddresses[freeIndex] = _addr;
+   // uint freeIndex = findFree(_name);
+    nameToId[_name].ownedAddresses.push(_addr);
     nameToId[_name].activeAddr[_addr] = true;
   }
 
@@ -333,7 +333,7 @@ contract Foundation {
     bytes32 idName=addrToName[msg.sender];
     FoundationId foundId = nameToId[idName];
     uint addrIndex=findAddr(idName, _addr);
-    foundId.ownedAddresses[addrIndex]=0;
+    delete foundId.ownedAddresses[addrIndex];
   }
 
   /**
@@ -368,11 +368,12 @@ contract Foundation {
 
    /**
 	@notice Returns an array of addresses associated with a FoundationID
+        @dev Currently external contracts cannot call this
         @param _name The name of the FoundationID to lookup
         @return an array of addresses associated with the FoundationID
   */
 
-  function resolveToAddresses(bytes32 _name) nameExists(_name) nameActive(_name) constant returns (address[50]) {
+  function resolveToAddresses(bytes32 _name) nameExists(_name) nameActive(_name) constant returns (address[]) {
     return nameToId[_name].ownedAddresses;
   }
 
