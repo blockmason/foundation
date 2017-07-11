@@ -13,7 +13,6 @@ contract Foundation {
   uint adminBalanceWei;
   uint8 maxNumToDeactivateAddr;
   uint extensionPeriod = 60*60*24*365;
-  //  uint maxAddresses = 50;
 
   struct FoundationId {
     bool initialized;
@@ -22,11 +21,7 @@ contract Foundation {
     uint activeUntil; //the date/time when this id deactivates
     uint depositBalanceWei; //how much deposit this owner has
     bytes32 name;
-    // uint8 numToDeactivateAddr; //how many addresses needed to deactivate address
     mapping ( address => bool ) activeAddr;
-    //requests to deactivate; goes diswantedAddr => addresses that diswant it
-    // mapping ( address => address[] ) deactivateReqs;
-    // address[] addrToDeactivate;
   }
 
   mapping ( address => bytes32 )  addrToName;
@@ -101,6 +96,10 @@ contract Foundation {
 
   //can be written better
 
+   /**
+	@notice Makes sure a foundationId has at least two addresses
+	@param _name The name of the ID
+  */
 
   modifier hasTwoAddress(bytes32 _name) {
     bool hasAddress1=false;
@@ -139,7 +138,8 @@ contract Foundation {
 
 
    /**
-	@notice Finds next available slot in IDs address array
+	@notice Finds next available index in IDs address array
+        @param _name the foundationId to check
 
   */
 
@@ -237,15 +237,16 @@ contract Foundation {
 
    /**
 	@dev Start creating a new FoundationID
+        @param _name foundationId name
+        @param _addr the address
   */
 
 
-  ///FIX FIX FIX
 
   function linkAddrToId(bytes32 _name, address _addr) private {
-    uint freeSlot = findFree(_name);
-    require(freeSlot<50);
-    nameToId[_name].ownedAddresses[freeSlot] = _addr;
+    uint freeIndex = findFree(_name);
+    require(freeIndex<50);
+    nameToId[_name].ownedAddresses[freeIndex] = _addr;
     nameToId[_name].activeAddr[_addr] = true;
   }
 
@@ -264,7 +265,6 @@ contract Foundation {
     nameToId[_name].initialized = true;
     nameToId[_name].activeUntil = _activeUntil;
     nameToId[_name].name = _name;
-    //nameToId[_name].numToDeactivateAddr = 1;
     nameToId[_name].depositBalanceWei = 0;
     linkAddrToId(_name, _addr);
   }
@@ -303,8 +303,15 @@ contract Foundation {
     nameToId[_name].pendingOwned = 0;
   }
 
+   /**
+        @dev Finds the index of an address in the user's foundationId ownedAddresses
+        @param _name the name of the FoundationID to search through.
+        @param _addr the address to find.
 
-  function findAddr(bytes32 _name, address _addr) constant returns(uint) {
+  */
+
+
+  function findAddr(bytes32 _name, address _addr) constant returns(uint) private {
     uint foundAddrIndex;
     for (uint i = 0; i <= nameToId[_name].ownedAddresses.length; i ++) {
        if (nameToId[_name].ownedAddresses[i]==_addr) {
@@ -315,6 +322,11 @@ contract Foundation {
     revert(); // something went wrong if it's not found but passed previous modifiers
   }
 
+   /**
+	@notice Deletes an address
+        @dev Must have at least 2 addresses otherwise throws
+        @param _addr the address to delete
+  */
 
 
   function deleteAddr(address _addr) nameExists(addrToName[_addr]) isOwner(addrToName[_addr]) hasTwoAddress(addrToName[_addr]) {
