@@ -1,0 +1,27 @@
+Calling Foundation from your smart contract is the same procedure as calling any external contract.  You need to declare the contract and then give an interface declaring whatever functions or variables you wish to use.
+
+As an example we wish to use three Foundation functions in our smart contract resolveToName, getAddrLength, getAddrIndex.  So we will declare the contract Foundation and then copy the function names, parameters and return values.  See below:
+
+
+contract Foundation {
+  function resolveToName(address _addr) constant returns (bytes32) {  }
+  function getAddrLength(bytes32 _name) constant returns (uint) {  }
+  function getAddrIndex(bytes32 _name, uint index) constant returns (address) {  }
+}
+
+
+Once we have this declared we'll write our own smart contract.  When we come to the point of wanting to use a Foundation function it's simple:
+
+contract MyContract {
+  function getFoundId(address _addr) constant returns (bytes32) {
+    address foundationAddress = 0xd615d0FCfE6c460AA79cdCfA82B3b420A7E89503;
+    Foundation f = Foundation(foundationAddress);
+    bytes32 foundId = f.resolveToName(_addr);
+    return foundId;
+  }
+
+Before copying this example exactly, make sure you have the most updated and correct address for Foundation.
+
+What we're doing in the above is declaring the Foundation contract as F at a specified address.  Then we do f.function() which will work for any Foundation function that both exists and is delcared in our interface for the Foundation contract.
+
+If you're getting errors compare the contract code found at the addess at https://etherscan.io/ with your interface.  Make sure your using the write data types with both the sent parameters and the return values.
