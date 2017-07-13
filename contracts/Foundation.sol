@@ -138,25 +138,21 @@ contract Foundation {
   }
 
 
-   /*
-	@notice Finds next available index in IDs address array
-        @param _name the foundationId to check
+  /**
+	@notice Returns whether an address has a FoundationId associated with it or not.
+        @param _addr the address to lookup
+        @return true if there is a foundationid for the address, false otherwise
 
+   */
 
-
-
-  function findFree(bytes32 _name) nameActive(_name) constant returns (uint) {
-    uint freeIndex=nameToId[_name].ownedAddresses.length; //past the last array slot
-     for (uint i = 0; i < nameToId[_name].ownedAddresses.length; i ++) {
-       if (nameToId[_name].ownedAddresses[i]==0) {
-         freeIndex=i;
-         break;
+     function hasName(address _addr) constant returns (bool) {
+       if (compare(addrToName[_addr], bytes32(0)) != 0) {
+         return true;
+       }
+       else {
+         return false;
        }
      }
-    return freeIndex;
-  }
- */
-
 
    /**
 	@notice Checks whether an address is associated with a FoundationID

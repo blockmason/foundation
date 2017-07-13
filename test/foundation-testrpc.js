@@ -202,6 +202,25 @@ contract('Foundation', function(accounts) {
            assert.equal(address, account2, "addrindex not working");
         });
     });
+
+
+    it("checks whether an address has a name or not", function() {
+        var ns;
+        return Foundation.new(account6, weiToExtend).then(function(instance) {
+            u = instance;
+            return u.createId(name2, {from: account1, value: weiToExtend});
+        }).then(function(tx) {
+            return u.hasName.call(account1);
+        }).then(function(hasNameBool) {
+            console.log(hasNameBool);
+            assert.equal(hasNameBool, true, "returning false when true");
+            return u.hasName.call(account2);
+        }).then(function(hasNameBool) {
+            console.log(hasNameBool);
+            assert.equal(hasNameBool, false, "returning true when false");
+
+        });
+    });
 });
 
 
