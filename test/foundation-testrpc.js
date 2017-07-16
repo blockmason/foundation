@@ -1,6 +1,6 @@
 var Foundation = artifacts.require("./Foundation.sol");
 
-/*
+
 contract('Foundation', function(accounts) {
     var account1 = accounts[0];
     var account2 = accounts[1];
@@ -15,10 +15,11 @@ contract('Foundation', function(accounts) {
     var weiToCreate = 3;
 
 
+
     it("creates a new instance of Foundation and gets weiToExtend", function() {
         var extend=5000;
         var ns;
-        return Foundation.new(account6, extend, weiToCreate).then(function(instance) {
+        return Foundation.new(name2, extend, weiToCreate).then(function(instance) {
             u = instance;
             return u.getWeiToExtend.call();
         }).then(function(wei) {
@@ -62,7 +63,7 @@ contract('Foundation', function(accounts) {
         var ns;
         return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name1, {from: account1, value: weiToExtend});
+            return u.createId(name1, {from: account1, value: weiToCreate});
         }).then(function(tx) {
             return u.extendIdOneYear(name1, {value: weiToExtend})
         }).then(function(tx) {
@@ -243,5 +244,5 @@ contract('Foundation', function(accounts) {
             assert.equal(error.toString(), "Error: VM Exception while processing transaction: invalid opcode", "Shouldn't be able to confirm 2nd id");
         });
     });
-        */
+
 });

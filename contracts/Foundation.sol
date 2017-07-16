@@ -156,14 +156,14 @@ contract Foundation {
 
    */
 
-     function hasName(address _addr) constant returns (bool) {
-       if (compare(addrToName[_addr], bytes32(0)) != 0) {
-         return true;
-       }
-       else {
-         return false;
-       }
-     }
+  function hasName(address _addr) constant returns (bool) {
+    if (compare(addrToName[_addr], bytes32(0)) != 0) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 
    /**
 	@notice Checks whether an address is associated with a FoundationID
@@ -298,6 +298,7 @@ contract Foundation {
 
 
   function createId(bytes32 _name) idCreator isNewName(_name) payable {
+    require(msg.value==weiToCreate); //so people don't accidently send too much also
     uint _activeUntil = now + extensionPeriod;
     createIdPrivate(_name, msg.sender, _activeUntil);
   }
