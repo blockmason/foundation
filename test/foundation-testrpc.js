@@ -163,7 +163,6 @@ contract('Foundation', function(accounts) {
         }).then(function(tx) {
             return u.resolveToAddresses.call(name2);
         }).then(function(addresses) {
-  //          console.log(addresses);
             return u.deleteAddr(account1);
         }).catch(function(error) {
 //            console.log(account1);
@@ -219,6 +218,27 @@ contract('Foundation', function(accounts) {
             console.log(hasNameBool);
             assert.equal(hasNameBool, false, "returning true when false");
 
+        });
+    });
+
+    it("can't add an address to two ids", function() {
+        var addrs1;
+        var addrs2;
+        return Foundation.new(name1, weiToExtend).then(function(instance) {
+            u = instance;
+            return u.createId(name2, {from: account3, value: weiToExtend});
+        }).then(function(tx) {
+            return u.addPendingUnification(name2, account2, {from: account3});
+        }).then(function(tx) {
+            return u.addPendingUnification(name1, account2, {from: account1});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name2, {from: account2});
+        }).then(function(tx) {
+            return u.confirmPendingUnification(name1, {from: account2});
+        }).then(function(v) {
+            assert.equal(true, false, "Shouldn't be able to confirm 2nd id");
+        }).catch(function(error) {
+            assert.equal(error.toString(), "Error: VM Exception while processing transaction: invalid opcode", "Shouldn't be able to confirm 2nd id");
         });
     });
 });

@@ -50,7 +50,10 @@ contract Foundation {
     _;
   }
 
-
+  modifier isNewAddr(address _addr) {
+    if ( addrToName[_addr] != bytes32("") ) revert();
+    _;
+  }
 
   modifier isNewName(bytes32 _name) {
     if ( nameToId[_name].initialized ) revert();
@@ -282,7 +285,7 @@ contract Foundation {
         @param _addr the new address to add.
   */
 
-  function addPendingUnification(bytes32 _name, address _addr) nameActive(_name) isOwner(_name) isNewNameAddrPair(_name, _addr) {
+  function addPendingUnification(bytes32 _name, address _addr) isOwner(_name) isNewNameAddrPair(_name, _addr) isNewAddr(_addr) {
     nameToId[_name].pendingOwned = _addr;
   }
 
@@ -292,7 +295,7 @@ contract Foundation {
         @param _name the name of the FoundationID to add the address to.
   */
 
-  function confirmPendingUnification(bytes32 _name) nameActive(_name) {
+  function confirmPendingUnification(bytes32 _name) isNewAddr(msg.sender) {
     if ( nameToId[_name].pendingOwned != msg.sender ) revert();
     initNameAddrPair(_name, msg.sender);
     linkAddrToId(_name, msg.sender);
