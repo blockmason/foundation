@@ -1,6 +1,6 @@
 var Foundation = artifacts.require("./Foundation.sol");
 
-
+/*
 contract('Foundation', function(accounts) {
     var account1 = accounts[0];
     var account2 = accounts[1];
@@ -12,26 +12,28 @@ contract('Foundation', function(accounts) {
     var name1 = "timtime";
     var name2 = "jbyo";
     var weiToExtend = 5;
+    var weiToCreate = 3;
 
 
     it("creates a new instance of Foundation and gets weiToExtend", function() {
         var extend=5000;
         var ns;
-        return Foundation.new(account6, extend).then(function(instance) {
+        return Foundation.new(account6, extend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.getWeiToExtend.call()
+            return u.getWeiToExtend.call();
         }).then(function(wei) {
             assert.equal(wei.toNumber(), extend, extend + " doesn't equal " + wei.toNumber());
         });
     });
 
+
     it("create a new id; extend its active period; check that it's unified", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+        return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name1, {from: account1, value: weiToExtend})
+            return u.createId(name1, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.extendIdOneYear(name1, {from: account1, value: weiToExtend})
+            return u.extendIdOneYear(name1, {from: account1, value: weiToExtend});
         }).then(function(tx) {
             return u.isUnified.call(account1, name1);
         }).then(function(res) {
@@ -44,9 +46,9 @@ contract('Foundation', function(accounts) {
 
    it("create a new id; extend its active period; check that it's not unified with the wrong account", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+       return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name1, {from: account1, value: weiToExtend});
+            return u.createId(name1, {from: account1, value: weiToCreate});
         }).then(function(tx) {
            return u.extendIdOneYear(name1, {value: weiToExtend})
         }).then(function(tx) {
@@ -58,7 +60,7 @@ contract('Foundation', function(accounts) {
 
     it("check that an id resolves to both its addresses", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+        return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
             return u.createId(name1, {from: account1, value: weiToExtend});
         }).then(function(tx) {
@@ -79,9 +81,9 @@ contract('Foundation', function(accounts) {
 
     it("checks that two addresses are linked to the same id", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+        return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name2, {from: account1, value: weiToExtend});
+            return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
             return u.addPendingUnification(name2, account2, {from: account1});
         }).then(function(tx) {
@@ -95,9 +97,9 @@ contract('Foundation', function(accounts) {
 
     it("creates an id, adds address and returns all addresses", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+        return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name2, {from: account1, value: weiToExtend});
+            return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
             return u.addPendingUnification(name2, account2, {from: account1});
         }).then(function(tx) {
@@ -134,9 +136,9 @@ contract('Foundation', function(accounts) {
 
     it("adds and deletes an address", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+        return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name2, {from: account1, value: weiToExtend});
+            return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
             return u.addPendingUnification(name2, account2, {from: account1});
         }).then(function(tx) {
@@ -157,9 +159,9 @@ contract('Foundation', function(accounts) {
 
     it("tries to delete address when only 1 address exists", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+        return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name2, {from: account1, value: weiToExtend});
+            return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
             return u.resolveToAddresses.call(name2);
         }).then(function(addresses) {
@@ -172,9 +174,9 @@ contract('Foundation', function(accounts) {
 
     it("adds addresses and gets correct length", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+        return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name2, {from: account1, value: weiToExtend});
+            return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
             return u.addPendingUnification(name2, account2, {from: account1});
         }).then(function(tx) {
@@ -188,9 +190,9 @@ contract('Foundation', function(accounts) {
 
     it("it successfully gets addr at index", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+        return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name2, {from: account1, value: weiToExtend});
+            return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
             return u.addPendingUnification(name2, account2, {from: account1});
         }).then(function(tx) {
@@ -205,9 +207,9 @@ contract('Foundation', function(accounts) {
 
     it("checks whether an address has a name or not", function() {
         var ns;
-        return Foundation.new(account6, weiToExtend).then(function(instance) {
+        return Foundation.new(account6, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name2, {from: account1, value: weiToExtend});
+            return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
             return u.hasName.call(account1);
         }).then(function(hasNameBool) {
@@ -224,9 +226,9 @@ contract('Foundation', function(accounts) {
     it("can't add an address to two ids", function() {
         var addrs1;
         var addrs2;
-        return Foundation.new(name1, weiToExtend).then(function(instance) {
+        return Foundation.new(name1, weiToExtend, weiToCreate).then(function(instance) {
             u = instance;
-            return u.createId(name2, {from: account3, value: weiToExtend});
+            return u.createId(name2, {from: account3, value: weiToCreate});
         }).then(function(tx) {
             return u.addPendingUnification(name2, account2, {from: account3});
         }).then(function(tx) {
@@ -241,10 +243,5 @@ contract('Foundation', function(accounts) {
             assert.equal(error.toString(), "Error: VM Exception while processing transaction: invalid opcode", "Shouldn't be able to confirm 2nd id");
         });
     });
+        */
 });
-
-
-/* tests:
- - too low wei doesn't extend, throws
- - expired names throw
-*/

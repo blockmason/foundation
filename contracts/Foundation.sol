@@ -10,6 +10,7 @@ contract Foundation {
 
   bytes32 admin; //the master id associated with the admin
   uint weiToExtend; //amount of eth needed to extend a year
+  uint weiToCreate;
   uint adminBalanceWei;
   uint8 maxNumToDeactivateAddr;
   uint extensionPeriod = 60*60*24*365;
@@ -98,6 +99,12 @@ contract Foundation {
     _;
   }
 
+  modifier idCreator() {
+    if ( msg.value != weiToCreate ) revert();
+    adminBalanceWei += msg.value;
+    _;
+  }
+
   //can be written better
 
    /**
@@ -133,10 +140,11 @@ contract Foundation {
   */
 
   //initializes contract with msg.sender as the first admin address
-  function Foundation(bytes32 _adminName, uint _weiToExtend) {
+  function Foundation(bytes32 _adminName, uint _weiToExtend, uint _weiToCreate) {
     admin = _adminName;
     createIdPrivate(_adminName, msg.sender, (2**256 - 1));
     weiToExtend = _weiToExtend;
+    weiToCreate = _weiToCreate;
     maxNumToDeactivateAddr = 1;
   }
 
@@ -170,21 +178,36 @@ contract Foundation {
   }
 
    /**
-	@notice Get the amount of Wei required to extend a FoundationID for 1 year.
-
+	@notice Set the amount of Wei required to extend a FoundationID for 1 year.
+        @param _weiToExtend The amount of wei needed to extend the id one year from now
   */
 
   function alterWeiToExtend(uint _weiToExtend) isAdmin {
     weiToExtend = _weiToExtend;
   }
 
+  /**
+     @notice Set the amount of Wei required to create a new id
+     @param _weiToCreate The amount of wei needed to create a new id
+  */
+  function alterWeiToCreate(uint _weiToCreate) isAdmin {
+    weiToCreate = _weiToCreate;
+  }
+
+
     /**
 	@notice Get the amount of Wei required to extend a FoundationID for 1 year.
-
-  */
+    */
 
   function getWeiToExtend() constant returns (uint weiAmount) {
     return weiToExtend;
+  }
+
+  /**
+     @notice Get the amount of Wei required to create a new id
+  */
+  function getWeiToCreate() constant returns (uint weiAmount) {
+    return weiToCreate;
   }
 
 
@@ -274,7 +297,7 @@ contract Foundation {
   */
 
 
-  function createId(bytes32 _name) extender isNewName(_name) payable {
+  function createId(bytes32 _name) idCreator isNewName(_name) payable {
     uint _activeUntil = now + extensionPeriod;
     createIdPrivate(_name, msg.sender, _activeUntil);
   }
