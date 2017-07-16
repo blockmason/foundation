@@ -3,6 +3,7 @@ var Foundation = artifacts.require("./Foundation.sol");
 module.exports = function(deployer, network, accounts) {
     var admin = "foundadmin";
     var weiToExtend = 0;
+    var weiToCreate = 0;
     var account1 = accounts[0];
     var account2 = accounts[1];
     var account3 = accounts[2];
@@ -12,7 +13,7 @@ module.exports = function(deployer, network, accounts) {
 
     var h;
 
-    deployer.deploy(Foundation, admin, weiToExtend, {from: account1});
+    deployer.deploy(Foundation, admin, weiToExtend, weiToCreate, {from: account1});
     deployer.then(function() {
         return Foundation.deployed();
     }).then(function(instance) {
