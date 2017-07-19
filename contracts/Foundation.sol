@@ -307,7 +307,7 @@ contract Foundation {
         @param _addr the new address to add.
   */
 
-  function addPendingUnification(address _addr) isOwner(addrToName[msg.sender]) isNewNameAddrPair(addrToName[msg.sender], _addr) isNewAddr(_addr) {
+  function addPendingUnification(address _addr) isNewNameAddrPair(addrToName[msg.sender], _addr) isNewAddr(_addr) {
     nameToId[addrToName[msg.sender]].pendingOwned = _addr;
   }
 
