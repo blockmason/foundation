@@ -298,19 +298,17 @@ contract Foundation {
 
 
   function createId(bytes32 _name) idCreator isNewName(_name) payable {
-    require(msg.value==weiToCreate); //so people don't accidently send too much also
     uint _activeUntil = now + extensionPeriod;
     createIdPrivate(_name, msg.sender, _activeUntil);
   }
 
    /**
 	@notice Add an address to a FoundationID, must be added from existing address associated with the FoundationID
-        @param _name the name of the FoundationID to add the address to.
         @param _addr the new address to add.
   */
 
-  function addPendingUnification(bytes32 _name, address _addr) isOwner(_name) isNewNameAddrPair(_name, _addr) isNewAddr(_addr) {
-    nameToId[_name].pendingOwned = _addr;
+  function addPendingUnification(address _addr) isOwner(addrToName[msg.sender]) isNewNameAddrPair(addrToName[msg.sender], _addr) isNewAddr(_addr) {
+    nameToId[addrToName[msg.sender]].pendingOwned = _addr;
   }
 
    /**

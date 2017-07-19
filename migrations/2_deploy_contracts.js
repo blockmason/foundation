@@ -24,7 +24,8 @@ module.exports = function(deployer, network, accounts) {
     }).then(function(tx) {
         return h.createId(user3, {from: account3});
     }).then(function(tx) {
-        return h.addPendingUnification(user3, account4, {from: account3});
+
+        return h.addPendingUnification(account4, {from: account3});
     }).then(function(tx) {
         return h.confirmPendingUnification(user3, {from: account4});
     }).then(function(tx) {

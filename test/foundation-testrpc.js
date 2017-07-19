@@ -67,7 +67,7 @@ contract('Foundation', function(accounts) {
         }).then(function(tx) {
             return u.extendIdOneYear(name1, {value: weiToExtend})
         }).then(function(tx) {
-            return u.addPendingUnification(name1, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name1, {from: account2});
         }).then(function(tx) {
@@ -86,7 +86,7 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -102,23 +102,23 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account3, {from: account2});
+            return u.addPendingUnification(account3, {from: account2});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account3});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account4, {from: account3});
+            return u.addPendingUnification(account4, {from: account3});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account4});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account5, {from: account4});
+            return u.addPendingUnification(account5, {from: account4});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account5});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account6, {from: account5});
+            return u.addPendingUnification(account6, {from: account5});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account6});
         }).then(function(tx) {
@@ -141,7 +141,7 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -179,7 +179,7 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -195,7 +195,7 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -204,7 +204,6 @@ contract('Foundation', function(accounts) {
            assert.equal(address, account2, "addrindex not working");
         });
     });
-
 
     it("checks whether an address has a name or not", function() {
         var ns;
@@ -231,9 +230,9 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account3, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account3});
+            return u.addPendingUnification(account2, {from: account3});
         }).then(function(tx) {
-            return u.addPendingUnification(name1, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -244,5 +243,6 @@ contract('Foundation', function(accounts) {
             assert.equal(error.toString(), "Error: VM Exception while processing transaction: invalid opcode", "Shouldn't be able to confirm 2nd id");
         });
     });
+
 
 });
