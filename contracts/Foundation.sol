@@ -41,7 +41,7 @@ contract Foundation {
   }
 
   /**
-	@notice Checks if a name is associated with an address, if already associated throws.
+	@notice Checks if this address is already in this name.
 	@param _name The name of the ID.
 	@param _addr The address to check.
   */
@@ -51,7 +51,13 @@ contract Foundation {
     _;
   }
 
-  modifier isNewAddr(address _addr) {
+
+  /**
+	@notice Checks if this address is associated with any id already.
+	@param _addr The address to check.
+  */
+
+  modifier addrHasId(address _addr) {
     if ( addrToName[_addr] != bytes32("") ) revert();
     _;
   }
@@ -307,7 +313,7 @@ contract Foundation {
         @param _addr the new address to add.
   */
 
-  function addPendingUnification(address _addr) isNewNameAddrPair(addrToName[msg.sender], _addr) isNewAddr(_addr) {
+  function addPendingUnification(address _addr) addrHasId(_addr) {
     nameToId[addrToName[msg.sender]].pendingOwned = _addr;
   }
 
@@ -317,7 +323,7 @@ contract Foundation {
         @param _name the name of the FoundationID to add the address to.
   */
 
-  function confirmPendingUnification(bytes32 _name) isNewAddr(msg.sender) {
+  function confirmPendingUnification(bytes32 _name) addrHasId(msg.sender) {
     if ( nameToId[_name].pendingOwned != msg.sender ) revert();
     initNameAddrPair(_name, msg.sender);
     linkAddrToId(_name, msg.sender);
