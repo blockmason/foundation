@@ -232,11 +232,11 @@ contract Foundation {
 
    /**
 	@notice Deposit Wei into the FoundationID.  This deposit is then withdrawable by any address associated with that FoundationID
-	@param _name the name of the ID to deposit to.
   */
 
-  function depositWei(bytes32 _name) payable isOwner(_name) nameExists(_name) {
-    nameToId[_name].depositBalanceWei += msg.value;
+  //removed nameExists(addrToName[msg.sender])
+  function depositWei() payable isOwner(addrToName[msg.sender]) {
+    nameToId[addrToName[msg.sender]].depositBalanceWei += msg.value;
   }
 
    /**
@@ -451,14 +451,13 @@ contract Foundation {
 
    /**
 	@notice allows owner of FoundationID to withdraw ethereum from their deposited amount
-        @param _name The FoundationID name
         @param amount The amount in wei to withdraw
         @return success if operation was successful or not
   */
 
-  function withdrawDeposit(bytes32 _name, uint amount) isOwner(_name) returns (bool success) {
-    if ( nameToId[_name].depositBalanceWei < amount ) revert();
-    nameToId[_name].depositBalanceWei -= amount;
+  function withdrawDeposit(uint amount) isOwner(addrToName[msg.sender])  returns (bool success) {
+    if ( nameToId[addrToName[msg.sender]].depositBalanceWei < amount ) revert();
+    nameToId[addrToName[msg.sender]].depositBalanceWei -= amount;
     return msg.sender.send(amount);
   }
 

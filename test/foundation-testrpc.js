@@ -244,5 +244,33 @@ contract('Foundation', function(accounts) {
         });
     });
 
-
+    it("deposits and withdraws wei", function() {
+        var addrs1;
+        var addrs2;
+        var depositAmount;
+        var originalBalance;
+        var secondBalance;
+        var thirdBalance;
+        return Foundation.new(name1, weiToExtend, weiToCreate).then(function(instance) {
+            originalBalance = web3.eth.getBalance(account1);
+ //           console.log("1-" + originalBalance.toNumber());
+            depositAmount = 10000000000000000000;
+            u = instance;
+            return u.depositWei({from: account1, value: depositAmount});
+        }).then(function(tx) {
+            secondBalance = web3.eth.getBalance(account1).toNumber();
+//            console.log("2-" + secondBalance);
+            assert(secondBalance+depositAmount<originalBalance, "second balance + deposit amount should be less than originalBalance");
+//            console.log(web3.eth.getBalance(account1).toNumber());
+            return u.getDepositWei(name1);
+        }).then(function(balance) {
+            assert.equal(depositAmount, balance.toNumber(), "balance and depositamount not equal");
+            //web3.eth.getBalance
+            return u.withdrawDeposit(depositAmount);
+        }).then(function(tx) {
+            thirdBalance = web3.eth.getBalance(account1).toNumber();
+  //          console.log("3-" + thirdBalance);
+            assert(thirdBalance>secondBalance, "thirdbalance is not greater than secondbalance");
+        });
+    });
 });
