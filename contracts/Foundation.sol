@@ -463,6 +463,7 @@ contract Foundation {
   // should have a check on the size of the integer ala openzeppelin transfer functions?
 
   function withdrawDeposit(uint amount) returns (bool success) {
+    require (amount>0);
     require ( nameToId[addrToName[msg.sender]].depositBalanceWei >= amount );
     nameToId[addrToName[msg.sender]].depositBalanceWei -= amount;
     return msg.sender.send(amount);
