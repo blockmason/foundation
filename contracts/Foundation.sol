@@ -155,6 +155,69 @@ contract Foundation {
   }
 
 
+  /////////////////////////////////////////////////
+  /////Functions for External developer interaction
+  ////////////////////////////////////////////////
+
+  /**
+	@notice Return whether two addresses are of the same FoundationId
+        @param _addr1 the first address to compare
+        @param _addr2 the second address to compare
+        @return true if the two addresses are of the same FoundationID
+
+   */
+
+  function areSameId(address _addr1, address _addr2) public constant returns (bool) {
+    bytes32 name1 = resolveToName(_addr1);
+    bytes32 name2 = resolveToName(_addr2);
+    if (compare(name1, name2) == 0 ) {
+      return true;
+    }
+    //can't return false as it will throw when the modifiers of resolveToName are run
+  }
+
+
+
+   /**
+	@notice Return the FoundationID that is associated with the address.
+        @param _addr the address to lookup
+        @return The FoundationID
+  */
+
+
+  function resolveToName(address _addr) public nameExists(addrToName[_addr]) nameActive(addrToName[_addr]) constant returns (bytes32) {
+    return addrToName[_addr];
+  }
+
+   /**
+	@notice Returns an array of addresses associated with a FoundationID
+        @dev Currently external contracts cannot call this
+        @param _name The name of the FoundationID to lookup
+        @return an array of addresses associated with the FoundationID
+  */
+
+  function resolveToAddresses(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (address[]) {
+    return nameToId[_name].ownedAddresses;
+  }
+
+
+  function getAddrIndex(bytes32 _name, uint index) public nameExists(_name) nameActive(_name) constant returns (address) {
+    require(index<nameToId[_name].ownedAddresses.length);
+    return nameToId[_name].ownedAddresses[index];
+  }
+
+
+     /**
+	@notice Gets length of address array for foundationId
+        @param _name the name of the foundationid
+        @return the number of addresses associated with a user
+  */
+
+  function getAddrLength(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (uint) {
+    return nameToId[_name].ownedAddresses.length;
+  }
+
+
   /**
 	@notice Returns whether an address has a FoundationId associated with it or not.
         @param _addr the address to lookup
@@ -187,6 +250,12 @@ contract Foundation {
 	@notice Set the amount of Wei required to extend a FoundationID for 1 year.
         @param _weiToExtend The amount of wei needed to extend the id one year from now
   */
+
+
+
+
+
+
 
   function alterWeiToExtend(uint _weiToExtend) public isAdmin {
     weiToExtend = _weiToExtend;
@@ -365,63 +434,6 @@ contract Foundation {
     delete foundId.ownedAddresses[addrIndex];
   }
 
-  /**
-	@notice Return whether two addresses are of the same FoundationId
-        @param _addr1 the first address to compare
-        @param _addr2 the second address to compare
-        @return true if the two addresses are of the same FoundationID
-
-   */
-
-  function areSameId(address _addr1, address _addr2) public constant returns (bool) {
-    bytes32 name1 = resolveToName(_addr1);
-    bytes32 name2 = resolveToName(_addr2);
-    if (compare(name1, name2) == 0 ) {
-      return true;
-    }
-    //can't return false as it will throw when the modifiers of resolveToName are run
-  }
-
-
-
-   /**
-	@notice Return the FoundationID that is associated with the address.
-        @param _addr the address to lookup
-        @return The FoundationID
-  */
-
-
-  function resolveToName(address _addr) public nameExists(addrToName[_addr]) nameActive(addrToName[_addr]) constant returns (bytes32) {
-    return addrToName[_addr];
-  }
-
-   /**
-	@notice Returns an array of addresses associated with a FoundationID
-        @dev Currently external contracts cannot call this
-        @param _name The name of the FoundationID to lookup
-        @return an array of addresses associated with the FoundationID
-  */
-
-  function resolveToAddresses(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (address[]) {
-    return nameToId[_name].ownedAddresses;
-  }
-
-
-  function getAddrIndex(bytes32 _name, uint index) public nameExists(_name) nameActive(_name) constant returns (address) {
-    require(index<nameToId[_name].ownedAddresses.length);
-    return nameToId[_name].ownedAddresses[index];
-  }
-
-
-     /**
-	@notice Gets length of address array for foundationId
-        @param _name the name of the foundationid
-        @return the number of addresses associated with a user
-  */
-
-  function getAddrLength(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (uint) {
-    return nameToId[_name].ownedAddresses.length;
-  }
 
    /**
 	@notice allows the admin of the contract with withdraw ethereum received through FoundationID extension payments.
