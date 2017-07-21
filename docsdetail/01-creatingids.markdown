@@ -8,28 +8,31 @@ In order to create an ID, you can simple call the createId function.  It must be
 
 The attached modifiers check the following, if they check fail the function will throw:
 
+##### Arguments 
+* _name: The 
+
 ##### Modifiers
-1. idCreator: Makes sure the amount of wei sent matches the amount of wei required to create.  (Currently the amount of wei require to create is set to 0).
-2. isNeName: Makes sure that no other ID already exists with the same name.
-3. payable: this function can receive ethereum.
-<p>
+* idCreator: Makes sure the amount of wei sent matches the amount of wei required to create.  (Currently the amount of wei require to create is set to 0).
+* isNeName: Makes sure that no other ID already exists with the same name.
+* payable: this function can receive ethereum.
+
 Once the action is completed you will have a foundationId with the msg.sender added as the address.
-<p>
+
 
 ## Add an Address
 Adding addresses to an ID is a two step process.  You first must add an address from an existing FoundationID address and then you must confirm from that new address.
-<p>
 
-<p>
+
+
 To add an address simply call the addPendingUnification function from an address already held within the FoundationId.  Call it with the address you wish to add.
-<p>
+
 
 ```javascript
   function addPendingUnification(address _addr) isNewNameAddrPair(addrToName[msg.sender], _addr) isNewAddr(_addr) {}
   ```
 
 ##### Modifiers
-1. addrHasId: Makes sure address doesn't already exist in a foundationId
+* addrHasId: Makes sure address doesn't already exist in a foundationId
 
 ## Confirm the Address
 
@@ -40,4 +43,4 @@ After adding an address from an associated address of the FoundationId you must 
 ```
 
 ##### Modifiers
-1. addrHasId: Makes sure address doesn't already exist in a foundationId
+* addrHasId: Makes sure address doesn't already exist in a foundationId
