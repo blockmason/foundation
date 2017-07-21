@@ -41,7 +41,7 @@ contract Foundation {
   }
 
   /**
-	@notice Checks if a name is associated with an address, if already associated throws.
+	@notice Checks if this address is already in this name.
 	@param _name The name of the ID.
 	@param _addr The address to check.
   */
@@ -51,7 +51,13 @@ contract Foundation {
     _;
   }
 
-  modifier isNewAddr(address _addr) {
+
+  /**
+	@notice Checks if this address is associated with any id already.
+	@param _addr The address to check.
+  */
+
+  modifier addrHasId(address _addr) {
     if ( addrToName[_addr] != bytes32("") ) revert();
     _;
   }
@@ -149,6 +155,69 @@ contract Foundation {
   }
 
 
+  /////////////////////////////////////////////////
+  /////Functions for External developer interaction
+  ////////////////////////////////////////////////
+
+  /**
+	@notice Return whether two addresses are of the same FoundationId
+        @param _addr1 the first address to compare
+        @param _addr2 the second address to compare
+        @return true if the two addresses are of the same FoundationID
+
+   */
+
+  function areSameId(address _addr1, address _addr2) public constant returns (bool) {
+    bytes32 name1 = resolveToName(_addr1);
+    bytes32 name2 = resolveToName(_addr2);
+    if (compare(name1, name2) == 0 ) {
+      return true;
+    }
+    //can't return false as it will throw when the modifiers of resolveToName are run
+  }
+
+
+
+   /**
+	@notice Return the FoundationID that is associated with the address.
+        @param _addr the address to lookup
+        @return The FoundationID
+  */
+
+
+  function resolveToName(address _addr) public nameExists(addrToName[_addr]) nameActive(addrToName[_addr]) constant returns (bytes32) {
+    return addrToName[_addr];
+  }
+
+   /**
+	@notice Returns an array of addresses associated with a FoundationID
+        @dev Currently external contracts cannot call this
+        @param _name The name of the FoundationID to lookup
+        @return an array of addresses associated with the FoundationID
+  */
+
+  function resolveToAddresses(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (address[]) {
+    return nameToId[_name].ownedAddresses;
+  }
+
+
+  function getAddrIndex(bytes32 _name, uint index) public nameExists(_name) nameActive(_name) constant returns (address) {
+    require(index<nameToId[_name].ownedAddresses.length);
+    return nameToId[_name].ownedAddresses[index];
+  }
+
+
+     /**
+	@notice Gets length of address array for foundationId
+        @param _name the name of the foundationid
+        @return the number of addresses associated with a user
+  */
+
+  function getAddrLength(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (uint) {
+    return nameToId[_name].ownedAddresses.length;
+  }
+
+
   /**
 	@notice Returns whether an address has a FoundationId associated with it or not.
         @param _addr the address to lookup
@@ -156,14 +225,14 @@ contract Foundation {
 
    */
 
-     function hasName(address _addr) constant returns (bool) {
-       if (compare(addrToName[_addr], bytes32(0)) != 0) {
-         return true;
-       }
-       else {
-         return false;
-       }
-     }
+  function hasName(address _addr) public constant returns (bool) {
+    if (compare(addrToName[_addr], bytes32(0)) != 0) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 
    /**
 	@notice Checks whether an address is associated with a FoundationID
@@ -173,7 +242,7 @@ contract Foundation {
 
   */
 
-  function isUnified(address _addr, bytes32 _name) nameActive(_name) constant returns (bool) {
+  function isUnified(address _addr, bytes32 _name) public nameActive(_name) constant returns (bool) {
     return idEq(addrToName[_addr], _name);
   }
 
@@ -182,7 +251,13 @@ contract Foundation {
         @param _weiToExtend The amount of wei needed to extend the id one year from now
   */
 
-  function alterWeiToExtend(uint _weiToExtend) isAdmin {
+
+
+
+
+
+
+  function alterWeiToExtend(uint _weiToExtend) public isAdmin {
     weiToExtend = _weiToExtend;
   }
 
@@ -190,7 +265,7 @@ contract Foundation {
      @notice Set the amount of Wei required to create a new id
      @param _weiToCreate The amount of wei needed to create a new id
   */
-  function alterWeiToCreate(uint _weiToCreate) isAdmin {
+  function alterWeiToCreate(uint _weiToCreate) public isAdmin {
     weiToCreate = _weiToCreate;
   }
 
@@ -199,14 +274,14 @@ contract Foundation {
 	@notice Get the amount of Wei required to extend a FoundationID for 1 year.
     */
 
-  function getWeiToExtend() constant returns (uint weiAmount) {
+  function getWeiToExtend() public constant returns (uint weiAmount) {
     return weiToExtend;
   }
 
   /**
      @notice Get the amount of Wei required to create a new id
   */
-  function getWeiToCreate() constant returns (uint weiAmount) {
+  function getWeiToCreate() public constant returns (uint weiAmount) {
     return weiToCreate;
   }
 
@@ -218,7 +293,7 @@ contract Foundation {
 
   //msg.value
   //adds a year to the end of now, if the balance is right
-  function extendIdOneYear(bytes32 _name) payable extender nameExists(_name) {
+  function extendIdOneYear(bytes32 _name) public payable extender nameExists(_name) {
     if ( msg.value != weiToExtend ) revert();
     adminBalanceWei += msg.value;
     nameToId[_name].activeUntil = now + extensionPeriod;
@@ -226,11 +301,13 @@ contract Foundation {
 
    /**
 	@notice Deposit Wei into the FoundationID.  This deposit is then withdrawable by any address associated with that FoundationID
-	@param _name the name of the ID to deposit to.
   */
 
-  function depositWei(bytes32 _name) payable isOwner(_name) nameExists(_name) {
-    nameToId[_name].depositBalanceWei += msg.value;
+  //removed nameExists(addrToName[msg.sender])
+  //removed isOwner(addrToName[msg.sender])
+  //should this use safeMath add?
+  function depositWei() public payable {
+    nameToId[addrToName[msg.sender]].depositBalanceWei += msg.value;
   }
 
    /**
@@ -238,7 +315,7 @@ contract Foundation {
 	@param _name the name of the FoundationID.
   */
 
-  function getDepositWei(bytes32 _name) nameExists(_name) constant returns (uint) {
+  function getDepositWei(bytes32 _name) public nameExists(_name) constant returns (uint) {
     return nameToId[_name].depositBalanceWei;
   }
 
@@ -297,19 +374,18 @@ contract Foundation {
   */
 
 
-  function createId(bytes32 _name) idCreator isNewName(_name) payable {
+  function createId(bytes32 _name) public idCreator isNewName(_name) payable {
     uint _activeUntil = now + extensionPeriod;
     createIdPrivate(_name, msg.sender, _activeUntil);
   }
 
    /**
 	@notice Add an address to a FoundationID, must be added from existing address associated with the FoundationID
-        @param _name the name of the FoundationID to add the address to.
         @param _addr the new address to add.
   */
 
-  function addPendingUnification(bytes32 _name, address _addr) isOwner(_name) isNewNameAddrPair(_name, _addr) isNewAddr(_addr) {
-    nameToId[_name].pendingOwned = _addr;
+  function addPendingUnification(address _addr) public addrHasId(_addr) {
+    nameToId[addrToName[msg.sender]].pendingOwned = _addr;
   }
 
    /**
@@ -318,7 +394,7 @@ contract Foundation {
         @param _name the name of the FoundationID to add the address to.
   */
 
-  function confirmPendingUnification(bytes32 _name) isNewAddr(msg.sender) {
+  function confirmPendingUnification(bytes32 _name) public addrHasId(msg.sender) {
     if ( nameToId[_name].pendingOwned != msg.sender ) revert();
     initNameAddrPair(_name, msg.sender);
     linkAddrToId(_name, msg.sender);
@@ -351,86 +427,13 @@ contract Foundation {
   */
 
 
-  function deleteAddr(address _addr) nameExists(addrToName[_addr]) isOwner(addrToName[_addr]) hasTwoAddress(addrToName[_addr]) {
+  function deleteAddr(address _addr) public nameExists(addrToName[_addr]) isOwner(addrToName[_addr]) hasTwoAddress(addrToName[_addr]) {
     bytes32 idName=addrToName[msg.sender];
     FoundationId foundId = nameToId[idName];
     uint addrIndex=findAddr(idName, _addr);
     delete foundId.ownedAddresses[addrIndex];
   }
 
-  /**
-	@notice Return whether two addresses are of the same FoundationId
-        @param _addr1 the first address to compare
-        @param _addr2 the second address to compare
-        @return true if the two addresses are of the same FoundationID
-
-   */
-
-  function areSameId(address _addr1, address _addr2) constant returns (bool) {
-    bytes32 name1 = resolveToName(_addr1);
-    bytes32 name2 = resolveToName(_addr2);
-    if (compare(name1, name2) == 0 ) {
-      return true;
-    }
-    //can't return false as it will throw when the modifiers of resolveToName are run
-  }
-
-
-
-   /**
-	@notice Return the FoundationID that is associated with the address.
-        @param _addr the address to lookup
-        @return The FoundationID
-  */
-
-
-  function resolveToName(address _addr) nameExists(addrToName[_addr]) nameActive(addrToName[_addr]) constant returns (bytes32) {
-    return addrToName[_addr];
-  }
-
-   /**
-	@notice Returns an array of addresses associated with a FoundationID
-        @dev Currently external contracts cannot call this
-        @param _name The name of the FoundationID to lookup
-        @return an array of addresses associated with the FoundationID
-  */
-
-  function resolveToAddresses(bytes32 _name) nameExists(_name) nameActive(_name) constant returns (address[]) {
-    return nameToId[_name].ownedAddresses;
-  }
-
-
-  function getAddrIndex(bytes32 _name, uint index) nameExists(_name) nameActive(_name) constant returns (address) {
-    require(index<nameToId[_name].ownedAddresses.length);
-    return nameToId[_name].ownedAddresses[index];
-  }
-
-  ///needed because can't return dynamic addresses to external contracts
-  ///allows for compatibility when dynamic array support is added
-
-  /*
-  function get10Addr(bytes32 _name, uint indexStart) nameExists(_name) nameActive(_name) constant returns (address[10]) {
-    address[10] memory tenAddr;
-    for (uint i=0; i<10; i++) {
-      if (i+indexStart < nameToId[_name].ownedAddresses.length) {
-        tenAddr[i]=nameToId[_name].ownedAddresses[i+indexStart];
-      }
-      else {
-        tenAddr[i]=0;
-      }
-    }
-    return tenAddr;
-  }
-*/
-     /**
-	@notice Gets length of address array for foundationId
-        @param _name the name of the foundationid
-        @return the number of addresses associated with a user
-  */
-
-  function getAddrLength(bytes32 _name) nameExists(_name) nameActive(_name) constant returns (uint) {
-    return nameToId[_name].ownedAddresses.length;
-  }
 
    /**
 	@notice allows the admin of the contract with withdraw ethereum received through FoundationID extension payments.
@@ -438,7 +441,7 @@ contract Foundation {
         @return success if operation was successful or not
   */
 
-  function withdraw(uint amount) isAdmin returns (bool success) {
+  function withdraw(uint amount) public isAdmin returns (bool success) {
     if ( adminBalanceWei < amount ) revert();
     adminBalanceWei -= amount;
     return msg.sender.send(amount);
@@ -446,14 +449,19 @@ contract Foundation {
 
    /**
 	@notice allows owner of FoundationID to withdraw ethereum from their deposited amount
-        @param _name The FoundationID name
         @param amount The amount in wei to withdraw
         @return success if operation was successful or not
   */
 
-  function withdrawDeposit(bytes32 _name, uint amount) isOwner(_name) returns (bool success) {
-    if ( nameToId[_name].depositBalanceWei < amount ) revert();
-    nameToId[_name].depositBalanceWei -= amount;
+  ///removed isOwner(addrToName[msg.sender])
+  //changed require to check if balance is greater than or equal to the amount
+  // should use SafeMath?
+  // should have a check on the size of the integer ala openzeppelin transfer functions?
+
+  function withdrawDeposit(uint amount) public returns (bool success) {
+    require (amount>0);
+    require ( nameToId[addrToName[msg.sender]].depositBalanceWei >= amount );
+    nameToId[addrToName[msg.sender]].depositBalanceWei -= amount;
     return msg.sender.send(amount);
   }
 
@@ -479,14 +487,14 @@ contract Foundation {
       return 0;
   }
 
-  function member(address e, address[] l) constant returns(bool) {
+  function member(address e, address[] l) public constant returns(bool) {
     for ( uint i=0; i<l.length; i++ ) {
       if ( l[i] == e ) return true;
     }
     return false;
   }
 
-  function idEq(bytes32 _id1, bytes32 _id2) constant returns (bool) {
+  function idEq(bytes32 _id1, bytes32 _id2) public constant returns (bool) {
     return ( compare(_id1, _id2) == 0 );
   }
 }

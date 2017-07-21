@@ -1,5 +1,9 @@
 var Foundation = artifacts.require("./Foundation.sol");
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d9c5cb2f5e1b56ea0b7a2ae006d77ebd7d08a71e
 contract('Foundation', function(accounts) {
     var account1 = accounts[0];
     var account2 = accounts[1];
@@ -14,10 +18,11 @@ contract('Foundation', function(accounts) {
     var weiToCreate = 3;
 
 
+
     it("creates a new instance of Foundation and gets weiToExtend", function() {
         var extend=5000;
         var ns;
-        return Foundation.new(account6, extend, weiToCreate).then(function(instance) {
+        return Foundation.new(name2, extend, weiToCreate).then(function(instance) {
             u = instance;
             return u.getWeiToExtend.call();
         }).then(function(wei) {
@@ -65,7 +70,7 @@ contract('Foundation', function(accounts) {
         }).then(function(tx) {
             return u.extendIdOneYear(name1, {value: weiToExtend})
         }).then(function(tx) {
-            return u.addPendingUnification(name1, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name1, {from: account2});
         }).then(function(tx) {
@@ -84,7 +89,7 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -100,23 +105,23 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account3, {from: account2});
+            return u.addPendingUnification(account3, {from: account2});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account3});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account4, {from: account3});
+            return u.addPendingUnification(account4, {from: account3});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account4});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account5, {from: account4});
+            return u.addPendingUnification(account5, {from: account4});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account5});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account6, {from: account5});
+            return u.addPendingUnification(account6, {from: account5});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account6});
         }).then(function(tx) {
@@ -139,7 +144,7 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -177,7 +182,7 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -193,7 +198,7 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account1, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -202,7 +207,6 @@ contract('Foundation', function(accounts) {
            assert.equal(address, account2, "addrindex not working");
         });
     });
-
 
     it("checks whether an address has a name or not", function() {
         var ns;
@@ -229,9 +233,9 @@ contract('Foundation', function(accounts) {
             u = instance;
             return u.createId(name2, {from: account3, value: weiToCreate});
         }).then(function(tx) {
-            return u.addPendingUnification(name2, account2, {from: account3});
+            return u.addPendingUnification(account2, {from: account3});
         }).then(function(tx) {
-            return u.addPendingUnification(name1, account2, {from: account1});
+            return u.addPendingUnification(account2, {from: account1});
         }).then(function(tx) {
             return u.confirmPendingUnification(name2, {from: account2});
         }).then(function(tx) {
@@ -243,4 +247,36 @@ contract('Foundation', function(accounts) {
         });
     });
 
+<<<<<<< HEAD
+=======
+    it("deposits and withdraws wei", function() {
+        var addrs1;
+        var addrs2;
+        var depositAmount;
+        var originalBalance;
+        var secondBalance;
+        var thirdBalance;
+        return Foundation.new(name1, weiToExtend, weiToCreate).then(function(instance) {
+            originalBalance = web3.eth.getBalance(account1);
+ //           console.log("1-" + originalBalance.toNumber());
+            depositAmount = 10000000000000000000;
+            u = instance;
+            return u.depositWei({from: account1, value: depositAmount});
+        }).then(function(tx) {
+            secondBalance = web3.eth.getBalance(account1).toNumber();
+//            console.log("2-" + secondBalance);
+            assert(secondBalance+depositAmount<originalBalance, "second balance + deposit amount should be less than originalBalance");
+//            console.log(web3.eth.getBalance(account1).toNumber());
+            return u.getDepositWei(name1);
+        }).then(function(balance) {
+            assert.equal(depositAmount, balance.toNumber(), "balance and depositamount not equal");
+            //web3.eth.getBalance
+            return u.withdrawDeposit(depositAmount);
+        }).then(function(tx) {
+            thirdBalance = web3.eth.getBalance(account1).toNumber();
+  //          console.log("3-" + thirdBalance);
+            assert(thirdBalance>secondBalance, "thirdbalance is not greater than secondbalance");
+        });
+    });
+>>>>>>> d9c5cb2f5e1b56ea0b7a2ae006d77ebd7d08a71e
 });
