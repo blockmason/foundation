@@ -235,7 +235,9 @@ contract Foundation {
   */
 
   //removed nameExists(addrToName[msg.sender])
-  function depositWei() payable isOwner(addrToName[msg.sender]) {
+  //removed isOwner(addrToName[msg.sender])
+  //should this use safeMath add?
+  function depositWei() payable {
     nameToId[addrToName[msg.sender]].depositBalanceWei += msg.value;
   }
 
