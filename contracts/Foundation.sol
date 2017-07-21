@@ -457,8 +457,13 @@ contract Foundation {
         @return success if operation was successful or not
   */
 
-  function withdrawDeposit(uint amount) isOwner(addrToName[msg.sender])  returns (bool success) {
-    if ( nameToId[addrToName[msg.sender]].depositBalanceWei < amount ) revert();
+  ///removed isOwner(addrToName[msg.sender])
+  //changed require to check if balance is greater than or equal to the amount
+  // should use SafeMath?
+  // should have a check on the size of the integer ala openzeppelin transfer functions?
+
+  function withdrawDeposit(uint amount) returns (bool success) {
+    require ( nameToId[addrToName[msg.sender]].depositBalanceWei >= amount );
     nameToId[addrToName[msg.sender]].depositBalanceWei -= amount;
     return msg.sender.send(amount);
   }
