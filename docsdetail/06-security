@@ -1,0 +1,16 @@
+## Security Concerns With Foundation
+Using FoundationIds in your project may present unique security concerns not normally thought of when using normal addresses.
+
+## Optional Foundation
+When Foundation is optional in your dapp you need to be careful.  Addresses are not guaranteed to be associated with a FoundationId indefinitely.  So you must assume that an address will leave a FoundationId and once again exist alone.
+
+This specific issue came up when writing a Foundation togglable ERC20 comptaible token.  It's tempting to not zero out address balances when a user switches over to a FoundationId.  Tempting because it costs gas.  Tempting also because it requires a greater effort by the user, because you can't loop through variable changes.  But this would be a mistake.  If you don't zero out the balances but rather prevent access to addresses associated with a FoundationId, the user can simply remove the addresses from their FoundationId and have access to those balances again.
+
+## Guaranteeing An ID Is Not Shared
+When using Foundation as a platform to identify people it becomes more and more critical that the person using the FoundationId is the person who's other credentials are online.  This is the purpose of Foundation's deposit feature.
+
+A deposit makes it risky for a user to share their FoundationID.  If they share it, even with a close friend, they have to now worry about that friend's security setup.  They also have to worry about that friend sharing it with others.
+
+Deposits also pose a unique security risk from the standpoint that any compromised address associated with a FoundationId will be able to steal the deposit.
+
+With both of these considerations in mind the use of deposits and the requirement of users to use deposits should be approached with caution, but can be a valuable method for guaranteeing a user's identity.

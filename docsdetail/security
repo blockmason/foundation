@@ -1,9 +1,0 @@
-Using FoundationIds in your project may present unique security concerns not normally thought of when using normal addresses.
-
-
-
-One major area that needs to be approached with caution is the dual use of both addresses and foundationIds.
-
-This came up when attempting to create a foundationId enablable token.  Because of the inablity to know how much gas it would take to edit all the balances for addresses associated with a FoundationId it makes it difficult to transfer from them.  If you were to create a separate balance only for foundationIds based off the original balances, then you can't 0 out the original balances because of the same loop gas problem.  So then if you don't 0 them out and the user later removes the addresses from the foundationId then the user suddenly has access to those balances again.
-
-There are a few ways to deal with this.   One is to never have addresses and foundationIds mixed like this.  For a token you could just use foundationIds from the start.
