@@ -373,7 +373,7 @@ contract Foundation {
   */
 
 
-  function createId(bytes32 _name) public idCreator isNewName(_name) payable {
+  function createId(bytes32 _name) public idCreator isUnused(msg.sender) isNewName(_name) payable {
     uint _activeUntil = now + extensionPeriod;
     createIdPrivate(_name, msg.sender, _activeUntil);
   }
