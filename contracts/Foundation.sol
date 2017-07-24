@@ -399,7 +399,7 @@ contract Foundation {
     initNameAddrPair(_name, msg.sender);
     linkAddrToId(_name, msg.sender);
     nameToId[_name].pendingOwned = 0;
-    pendings[msg.sender] = 0;
+    pendings[msg.sender] = bytes32("");
   }
 
    /**
