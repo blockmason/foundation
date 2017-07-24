@@ -14,6 +14,7 @@ contract Foundation {
   uint adminBalanceWei;
   uint8 maxNumToDeactivateAddr;
   uint extensionPeriod = 60*60*24*365;
+  mapping ( address => bytes32 ) pendings;
   //  uint addrSize=50;
 
   struct FoundationId {
@@ -57,7 +58,7 @@ contract Foundation {
 	@param _addr The address to check.
   */
 
-  modifier addrHasId(address _addr) {
+  modifier isUnused(address _addr) {
     if ( addrToName[_addr] != bytes32("") ) revert();
     _;
   }
@@ -177,11 +178,10 @@ contract Foundation {
   }
 
 
-
-   /**
-	@notice Return the FoundationID that is associated with the address.
-        @param _addr the address to lookup
-        @return The FoundationID
+  /**
+     @notice Return the FoundationID that is associated with the address.
+     @param _addr the address to lookup
+     @return The FoundationID
   */
 
 
@@ -379,8 +379,9 @@ contract Foundation {
         @param _addr the new address to add.
   */
 
-  function addPendingUnification(address _addr) public addrHasId(_addr) {
+  function addPendingUnification(address _addr) public isUnused(_addr) {
     nameToId[addrToName[msg.sender]].pendingOwned = _addr;
+    pendings[_addr] = addrToName[msg.sender];
   }
 
    /**
@@ -389,7 +390,7 @@ contract Foundation {
         @param _name the name of the FoundationID to add the address to.
   */
 
-  function confirmPendingUnification(bytes32 _name) public addrHasId(msg.sender) {
+  function confirmPendingUnification(bytes32 _name) public isUnused(msg.sender) {
     if ( nameToId[_name].pendingOwned != msg.sender ) revert();
     initNameAddrPair(_name, msg.sender);
     linkAddrToId(_name, msg.sender);
@@ -401,8 +402,12 @@ contract Foundation {
         @param _name the name of the FoundationID to query
    */
 
-  function getPendingUnification(bytes32 _name) constant returns (address) {
+  function sentPending(bytes32 _name) constant returns (address) {
     return nameToId[_name].pendingOwned;
+  }
+
+  function todoPending(address _addr) constant returns (bytes32) {
+    return pendings[_addr];
   }
 
    /**
@@ -462,7 +467,7 @@ contract Foundation {
   // should have a check on the size of the integer ala openzeppelin transfer functions?
 
   function withdrawDeposit(uint amount) public returns (bool success) {
-    require (amount>0);
+    require (amount > 0);
     require ( nameToId[addrToName[msg.sender]].depositBalanceWei >= amount );
     nameToId[addrToName[msg.sender]].depositBalanceWei -= amount;
     return msg.sender.send(amount);
