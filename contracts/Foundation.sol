@@ -252,11 +252,6 @@ contract Foundation {
   */
 
 
-
-
-
-
-
   function alterWeiToExtend(uint _weiToExtend) public isAdmin {
     weiToExtend = _weiToExtend;
   }
@@ -402,12 +397,20 @@ contract Foundation {
   }
 
    /**
+        @dev Returns the address, if any, up for unification
+        @param _name the name of the FoundationID to query
+   */
+
+  function getPendingUnification(bytes32 _name) constant returns (address) {
+    return nameToId[_name].pendingOwned;
+  }
+
+   /**
         @dev Finds the index of an address in the user's foundationId ownedAddresses
         @param _name the name of the FoundationID to search through.
         @param _addr the address to find.
 
   */
-
 
   function findAddr(bytes32 _name, address _addr) private constant returns(uint)  {
     uint foundAddrIndex;
