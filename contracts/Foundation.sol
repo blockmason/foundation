@@ -314,6 +314,10 @@ contract Foundation {
     return nameToId[_name].depositBalanceWei;
   }
 
+  function getExpirationDate(bytes32 _name) constant returns (uint) {
+    return nameToId[_name].activeUntil;
+  }
+
    /*
 	@notice Change the number of addresses associated with FoundationID required to deactivate another address.
 	@param _name the name of the FoundationID.
