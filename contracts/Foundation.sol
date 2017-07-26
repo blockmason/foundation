@@ -49,7 +49,7 @@ contract Foundation {
   }
 
   modifier isNewName(bytes32 _name) {
-    if ( afd.idInitialized(_name) revert();
+    if ( afd.idInitialized(_name) ) revert();
     _;
   }
 
@@ -70,7 +70,7 @@ contract Foundation {
   modifier isOwner(bytes32 _name) {
     //msg.sender should be one of the addresses that owns the master id .
     if ( compare(_name, afd.getAddrToName(msg.sender)) != 0 ) revert();
-    if ( !idIsActiveAddr(_name, msg.sender) ) revert();
+    if ( ! afd.idIsActiveAddr(_name, msg.sender) ) revert();
     _;
   }
 
@@ -101,8 +101,8 @@ contract Foundation {
   */
   modifier hasTwoAddress(bytes32 _name) {
     uint numAddrs = 0;
-    for (uint i = 0; i < nameToId[_name].ownedAddresses.length; i ++) {
-      if ( idOwnedAddresses(_name)[i] !=0 ) {
+    for (uint i = 0; i < afd.numOwnedAddrs(_name); i++) {
+      if ( afd.ownedAddrAtIndex(_name, i) !=0 ) {
         numAddrs++;
         if (numAddrs > 1)
           break;
@@ -164,14 +164,19 @@ contract Foundation {
      @param _name The name of the FoundationID to lookup
      @return an array of addresses associated with the FoundationID
   */
+  address[] tmpAddrs;
   function resolveToAddresses(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (address[]) {
-    return afd.idOwnedAddresses(_name);
+    tmpAddrs.length = 0;
+    for ( uint i=0; i < afd.numOwnedAddrs(_name); i++ ) {
+      tmpAddrs.push(afd.ownedAddrAtIndex(_name, i));
+    }
+    return tmpAddrs;
   }
 
 
   function getAddrIndex(bytes32 _name, uint index) public nameExists(_name) nameActive(_name) constant returns (address) {
-    require( index < afd.idOwnedAddresses(_name).length );
-    return afd.idOwnedAddresses(_name)[index];
+    require ( index < afd.numOwnedAddrs(_name) );
+    return afd.ownedAddrAtIndex(_name, index);
   }
 
   /**
@@ -180,7 +185,7 @@ contract Foundation {
      @return the number of addresses associated with a user
   */
   function getAddrLength(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (uint) {
-    return afd.idOwnedAddresses(_name).length;
+    return afd.numOwnedAddrs(_name);
   }
 
 
@@ -247,7 +252,7 @@ contract Foundation {
   function extendIdOneYear(bytes32 _name) public payable extender nameExists(_name) {
     if ( msg.value != weiToExtend ) revert();
     adminBalanceWei += msg.value;
-    afd.setIdActiveUntil(now + extensionPeriod);
+    afd.setIdActiveUntil(_name, now + extensionPeriod);
   }
 
   /**
@@ -257,7 +262,7 @@ contract Foundation {
   function depositWei() public payable {
     bytes32 user = afd.getAddrToName(msg.sender);
     uint dbw = afd.idDepositBalanceWei(user);
-    afd.setDepositBalanceWei(user, dbw + msg.value);
+    afd.setIdDepositBalanceWei(user, dbw + msg.value);
   }
 
   /**
@@ -348,35 +353,16 @@ contract Foundation {
     return afd.getPending(_addr);
   }
 
-
-  /**
-     @dev Finds the index of an address in the user's foundationId ownedAddresses
-     @param _name the name of the FoundationID to search through.
-     @param _addr the address to find.
-  */
-  function findAddr(bytes32 _name, address _addr) private constant returns(uint)  {
-    uint foundAddrIndex;
-    for (uint i = 0; i <= afd.idOwnedAddresses(_name).length; i ++) {
-      if ( afd.idOwnedAddresses(_name)[i] == _addr) {
-         foundAddrIndex = i;
-         return foundAddrIndex;
-      }
-    }
-    revert(); // something went wrong if it's not found but passed previous modifiers
-  }
-
-
   /**
      @notice Deletes an address
      @dev Must have at least 2 addresses otherwise throws
      @param _addr the address to delete
   */
   function deleteAddr(address _addr) public nameExists(afd.getAddrToName(_addr)) isOwner(afd.getAddrToName(_addr)) hasTwoAddress(afd.getAddrToName(_addr)) {
-    bytes32 idName = afd.getAddrToName(msg.sender);
-    uint addrIndex = findAddr(idName, _addr);
-    afd.deleteAddrAtIndex(addrIndex);
+    bytes32 user = afd.getAddrToName(msg.sender);
+    uint addrIndex = afd.findAddr(user, _addr);
+    afd.deleteAddrAtIndex(user, addrIndex);
   }
-
 
    /**
 	@notice allows the admin of the contract with withdraw ethereum received through FoundationID extension payments.

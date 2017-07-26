@@ -131,6 +131,33 @@ contract FoundationData {
     return addrToName[_addr];
   }
 
+  /*   ownedAddresses helpers   */
+  /**
+     @dev Finds the index of an address in the user's foundationId ownedAddresses
+     @param fId the name of the FoundationID to search through.
+     @param _addr the address to find.
+  */
+  function findAddr(bytes32 fId, address _addr) constant returns (uint) {
+    uint foundAddrIndex;
+    for (uint i = 0; i <= nameToId[fId].ownedAddresses.length; i ++) {
+      if ( nameToId[fId].ownedAddresses[i] == _addr) {
+         foundAddrIndex = i;
+         return foundAddrIndex;
+      }
+    }
+    revert(); //should only be called when it knows the address is present
+  }
+
+  function numOwnedAddrs(bytes32 fId) constant returns (uint) {
+    return nameToId[fId].ownedAddresses.length;
+  }
+
+  function ownedAddrAtIndex(bytes32 fId, uint index) constant returns (address) {
+    return nameToId[fId].ownedAddresses[index];
+  }
+
+
+  /*   helpers                  */
   function compare(bytes32 a, bytes32 b) private constant returns (int) {
     //    bytes memory a = bytes(_a);
     //    bytes memory b = bytes(_b);

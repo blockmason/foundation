@@ -26,6 +26,11 @@ contract AbstractFoundationData {
   function idActiveUntil(bytes32 fId) constant returns (uint timestamp);
   function idIsActiveAddr(bytes32 fId, address _addr) constant returns (bool);
 
+  function getAdmin() constant returns (bytes32);
   function getPending(address _addr) constant returns (bytes32);
   function getAddrToName(address _addr) constant returns (bytes32);
+
+  function findAddr(bytes32 fId, address _addr) constant returns (uint);
+  function numOwnedAddrs(bytes32 fId) constant returns (uint);
+  function ownedAddrAtIndex(bytes32 fId, uint index) constant returns (address);
 }

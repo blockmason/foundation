@@ -1,0 +1,419 @@
+{
+  "contract_name": "AbstractFoundationData",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_name",
+          "type": "bytes32"
+        },
+        {
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "setPendings",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "getAddrToName",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "findAddr",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "idIsActiveAddr",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "_addr",
+          "type": "address"
+        },
+        {
+          "name": "val",
+          "type": "bool"
+        }
+      ],
+      "name": "setIdActiveAddr",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "idActiveUntil",
+      "outputs": [
+        {
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getAdmin",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "idOwnedAddresses",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "weiAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "setIdDepositBalanceWei",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "_pendingAddr",
+          "type": "address"
+        }
+      ],
+      "name": "setIdPendingOwned",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "idPendingOwned",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_name",
+          "type": "bytes32"
+        },
+        {
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "setAddrToName",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "val",
+          "type": "bytes32"
+        }
+      ],
+      "name": "setIdName",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "idInitialized",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "init",
+          "type": "bool"
+        }
+      ],
+      "name": "setIdInitialized",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "idDepositBalanceWei",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "clearIdPendingOwned",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "pushIdOwnedAddresses",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "deleteAddrAtIndex",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "getPending",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "numOwnedAddrs",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "_activeUntil",
+          "type": "uint256"
+        }
+      ],
+      "name": "setIdActiveUntil",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "fId",
+          "type": "bytes32"
+        },
+        {
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "ownedAddrAtIndex",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1501057385185
+}
