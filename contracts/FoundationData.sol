@@ -3,6 +3,7 @@ pragma solidity ^0.4.11;
 contract FoundationData {
 
   address foundationContract;
+  bytes32 admin; //the master id associated with the admin
 
   struct FoundationId {
     bool initialized;
@@ -27,8 +28,24 @@ contract FoundationData {
     _;
   }
 
-  function FoundationData(address _foundationContract) {
-    foundationContract = _foundationContract;
+  modifier isAdmin() {
+    if ( compare(getAddrToName(msg.sender), admin) != 0 ) revert();
+    _;
+  }
+
+  function FoundationData(bytes32 _admin) {
+    admin = _admin;
+    addrToName[msg.sender] = _admin;
+    nameToId[_admin].initialized = true;
+    nameToId[_admin].activeUntil = now + 365*24*60*60*1000; //1000 years
+    nameToId[_admin].name = _admin;
+    nameToId[_admin].depositBalanceWei = 0;
+    nameToId[_admin].ownedAddresses.push(msg.sender);
+    nameToId[_admin].activeAddr[msg.sender] = true;
+  }
+
+  function setFoundationContract(address fc) public isAdmin {
+    foundationContract = fc;
   }
 
   /*  Setters  */
@@ -37,18 +54,18 @@ contract FoundationData {
   }
 
   function pushIdOwnedAddresses(bytes32 fId, address _addr) public isFoundation {
-    nameToId[fId].ownedAddress.push(_addr);
+    nameToId[fId].ownedAddresses.push(_addr);
   }
 
   function setIdPendingOwned(bytes32 fId, address _pendingAddr) public isFoundation {
     nameToId[fId].pendingOwned = _pendingAddr;
   }
 
-  function setIdDepositBalanceWei(bytes32 fId, uint wei) public isFoundation {
-    nameToId[fId].depositBalanceWei = wei;
+  function setIdDepositBalanceWei(bytes32 fId, uint weiAmount) public isFoundation {
+    nameToId[fId].depositBalanceWei = weiAmount;
   }
 
-  function setIdActiveUntil(bytes32 fId, unit _activeUntil) public isFoundation {
+  function setIdActiveUntil(bytes32 fId, uint _activeUntil) public isFoundation {
     nameToId[fId].activeUntil = _activeUntil;
   }
 
@@ -71,27 +88,27 @@ contract FoundationData {
 
   /*  Getters  */
   function idInitialized(bytes32 fId) constant returns (bool) {
-    return nameToId[fid].initialized;
+    return nameToId[fId].initialized;
   }
 
   function idOwnedAddresses(bytes32 fId) constant returns (address[]) {
-    return nameToId[fid].ownedAddresses;
+    return nameToId[fId].ownedAddresses;
   }
 
   function idPendingOwned(bytes32 fId) constant returns (address) {
-    return nameToId[fid].pendingOwned;
+    return nameToId[fId].pendingOwned;
   }
 
   function idDepositBalanceWei(bytes32 fId) constant returns (uint) {
-    return nameToId[fid].depositBalanceWei;
+    return nameToId[fId].depositBalanceWei;
   }
 
   function idActiveUntil(bytes32 fId) constant returns (uint timestamp) {
-    return nameToId[fid].activeUntil;
+    return nameToId[fId].activeUntil;
   }
 
   function idIsActiveAddr(bytes32 fId, address _addr) constant returns (bool) {
-    return nameToId[fid].activeAddr[_addr];
+    return nameToId[fId].activeAddr[_addr];
   }
 
   function getPending(address _addr) constant returns (bytes32) {
@@ -102,4 +119,21 @@ contract FoundationData {
     return addrToName[_addr];
   }
 
+  function compare(bytes32 a, bytes32 b) private constant returns (int) {
+    //    bytes memory a = bytes(_a);
+    //    bytes memory b = bytes(_b);
+    uint minLength = a.length;
+    if (b.length < minLength) minLength = b.length;
+    for (uint i = 0; i < minLength; i ++)
+      if (a[i] < b[i])
+        return -1;
+      else if (a[i] > b[i])
+        return 1;
+    if (a.length < b.length)
+      return -1;
+    else if (a.length > b.length)
+      return 1;
+    else
+      return 0;
+  }
 }

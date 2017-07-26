@@ -12,7 +12,6 @@ contract Foundation {
 
   AbstractFoundationData afd;
   bytes32 admin; //the master id associated with the admin
-  address masterAddr; //used only once, to set FoundationData address
   uint weiToExtend; //amount of eth needed to extend a year
   uint weiToCreate;
   uint adminBalanceWei;
@@ -55,34 +54,31 @@ contract Foundation {
   }
 
   /**
-	@notice Checks if a name exists to prevent duplicates from being created.
-	@param _name The name of the ID
+     @notice Checks if a name exists to prevent duplicates from being created.
+     @param _name The name of the ID
   */
-
   modifier nameExists(bytes32 _name) {
     if ( ! afd.idInitialized(_name) ) revert();
     _;
   }
 
 
-   /**
-	@notice Checks if a name is the owner of the foundationid
-	@param _name The name of the ID
-  */
-
+    /**
+       @notice Checks if a name is the owner of the foundationid
+       @param _name The name of the ID
+    */
   modifier isOwner(bytes32 _name) {
     //msg.sender should be one of the addresses that owns the master id .
-    if ( compare(_name, addrToName[msg.sender]) != 0 ) revert();
-    if ( !nameToId[_name].activeAddr[msg.sender] ) revert();
+    if ( compare(_name, afd.getAddrToName(msg.sender)) != 0 ) revert();
+    if ( !idIsActiveAddr(_name, msg.sender) ) revert();
     _;
   }
 
-   /**
-	@notice Checks if a name is the owner of the contract
+  /**
+     @notice Checks if a name is the owner of the contract
   */
-
   modifier isAdmin() {
-    if ( compare(addrToName[msg.sender], admin) != 0 ) revert();
+    if ( compare(afd.getAddrToName(msg.sender), admin) != 0 ) revert();
     _;
   }
 
@@ -99,12 +95,10 @@ contract Foundation {
   }
 
   //can be written better
-
-   /**
-	@notice Makes sure a foundationId has at least two addresses
-	@param _name The name of the ID
+  /**
+     @notice Makes sure a foundationId has at least two addresses
+     @param _name The name of the ID
   */
-
   modifier hasTwoAddress(bytes32 _name) {
     bool hasAddress1=false;
     bool hasAddress2=false;
@@ -131,20 +125,13 @@ contract Foundation {
 	@param _weiToExtend The amount in wei required to extend the validity of a FoundationID for 1 year.
 
   */
-
-  //initializes contract with msg.sender as the first admin address and as master
+  //initializes contract with msg.sender as the first admin address
   function Foundation(bytes32 _adminName, uint _weiToExtend, uint _weiToCreate) {
-    masterAddr = msg.sender;
     admin = _adminName;
     createIdPrivate(_adminName, msg.sender, (2**256 - 1));
     weiToExtend = _weiToExtend;
     weiToCreate = _weiToCreate;
     maxNumToDeactivateAddr = 1;
-  }
-
-
-  function setFoundationData(address foundationDataContract) public {
-    if ( msg.sender != masterAddr) revert();
     afd = AbstractFoundationData(foundationDataContract);
   }
 
@@ -311,17 +298,6 @@ contract Foundation {
     return nameToId[_name].activeUntil;
   }
 
-   /*
-	@notice Change the number of addresses associated with FoundationID required to deactivate another address.
-	@param _name the name of the FoundationID.
-        @param newNumToD the new number of addresses required to deactivate.
-
-
-  function alterNumToDeactivate(bytes32 _name, uint8 newNumToD) isOwner(_name) {
-    if ( newNumToD < 2 ) revert();
-    if ( newNumToD > maxNumToDeactivateAddr ) revert();
-    nameToId[_name].numToDeactivateAddr = newNumToD;
-  }*/
 
   function initNameAddrPair(bytes32 _name, address _addr) private {
     addrToName[_addr] = _name;
@@ -332,24 +308,18 @@ contract Foundation {
         @param _name foundationId name
         @param _addr the address
   */
-
-
-
   function linkAddrToId(bytes32 _name, address _addr) private {
    // uint freeIndex = findFree(_name);
     nameToId[_name].ownedAddresses.push(_addr);
     nameToId[_name].activeAddr[_addr] = true;
   }
 
-
-   /**
-	@notice create a new FoundationID.
-        @dev private function called by createId
-        @param _name the name of the new FoundationID
-        @param _addr The address of the creator.
+  /**
+     @notice create a new FoundationID.
+     @dev private function called by createId
+     @param _name the name of the new FoundationID
+     @param _addr The address of the creator.
   */
-
-
   function createIdPrivate(bytes32 _name, address _addr, uint _activeUntil) isNewName(_name) private {
     initNameAddrPair(_name, _addr);
     //initialized in an inactive state
