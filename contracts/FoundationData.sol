@@ -44,6 +44,10 @@ contract FoundationData {
     nameToId[_admin].activeAddr[msg.sender] = true;
   }
 
+  function getAdmin() constant returns (bytes32) {
+    return admin;
+  }
+
   function setFoundationContract(address fc) public isAdmin {
     foundationContract = fc;
   }
@@ -59,6 +63,10 @@ contract FoundationData {
 
   function setIdPendingOwned(bytes32 fId, address _pendingAddr) public isFoundation {
     nameToId[fId].pendingOwned = _pendingAddr;
+  }
+
+  function clearIdPendingOwned(bytes32 fId) public isFoundation {
+    nameToId[fId].pendingOwned = 0;
   }
 
   function setIdDepositBalanceWei(bytes32 fId, uint weiAmount) public isFoundation {

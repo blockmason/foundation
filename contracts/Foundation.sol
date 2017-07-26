@@ -100,141 +100,121 @@ contract Foundation {
      @param _name The name of the ID
   */
   modifier hasTwoAddress(bytes32 _name) {
-    bool hasAddress1=false;
-    bool hasAddress2=false;
+    uint numAddrs = 0;
     for (uint i = 0; i < nameToId[_name].ownedAddresses.length; i ++) {
-      if (nameToId[_name].ownedAddresses[i]!=0) {
-        if (hasAddress1) {
-          hasAddress2=true;
+      if ( idOwnedAddresses(_name)[i] !=0 ) {
+        numAddrs++;
+        if (numAddrs > 1)
           break;
-        }
-        else {
-          hasAddress1=true;
-        }
       }
     }
-    require(hasAddress1);
-    require(hasAddress2);
+    require( numAddrs >= 2 );
     _;
   }
 
 
-   /**
-	@notice Creates the contract
-	@param _adminName The name of the ID to be the admin ID
-	@param _weiToExtend The amount in wei required to extend the validity of a FoundationID for 1 year.
-
+  /**
+     @notice Creates the contract
+     @param _adminName The name of the ID to be the admin ID
+     @param _weiToExtend The amount in wei required to extend the validity of a FoundationID for 1 year.
   */
   //initializes contract with msg.sender as the first admin address
-  function Foundation(bytes32 _adminName, uint _weiToExtend, uint _weiToCreate) {
+  function Foundation(address foundationDataContract, bytes32 _adminName, uint _weiToExtend, uint _weiToCreate) {
+    afd = AbstractFoundationData(foundationDataContract);
+    //admin should already be created in FoundationData
+    if ( ! idEq(afd.getAdmin(), _adminName) ) revert();
     admin = _adminName;
-    createIdPrivate(_adminName, msg.sender, (2**256 - 1));
     weiToExtend = _weiToExtend;
     weiToCreate = _weiToCreate;
     maxNumToDeactivateAddr = 1;
-    afd = AbstractFoundationData(foundationDataContract);
   }
 
 
-  /////////////////////////////////////////////////
-  /////Functions for External developer interaction
-  ////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////
+  /////  Functions for External developer interaction    ///
+  //////////////////////////////////////////////////////////
 
   /**
-	@notice Return whether two addresses are of the same FoundationId
-        @param _addr1 the first address to compare
-        @param _addr2 the second address to compare
-        @return true if the two addresses are of the same FoundationID
-
-   */
-
+     @notice Return whether two addresses are of the same FoundationId
+     @param _addr1 the first address to compare
+     @param _addr2 the second address to compare
+     @return true if the two addresses are of the same FoundationID
+  */
   function areSameId(address _addr1, address _addr2) public constant returns (bool) {
     bytes32 name1 = resolveToName(_addr1);
     bytes32 name2 = resolveToName(_addr2);
     if (compare(name1, name2) == 0 ) {
       return true;
     }
-    //can't return false as it will throw when the modifiers of resolveToName are run
+    return false;
   }
-
 
   /**
      @notice Return the FoundationID that is associated with the address.
      @param _addr the address to lookup
      @return The FoundationID
   */
-
-
-  function resolveToName(address _addr) public nameExists(addrToName[_addr]) nameActive(addrToName[_addr]) constant returns (bytes32) {
-    return addrToName[_addr];
+  function resolveToName(address _addr) public nameExists(afd.getAddrToName(_addr)) nameActive(afd.getAddrToName(_addr)) constant returns (bytes32) {
+    return afd.getAddrToName(_addr);
   }
 
-   /**
-	@notice Returns an array of addresses associated with a FoundationID
-        @dev Currently external contracts cannot call this
-        @param _name The name of the FoundationID to lookup
-        @return an array of addresses associated with the FoundationID
+  /**
+     @notice Returns an array of addresses associated with a FoundationID
+     @dev Currently external contracts cannot call this
+     @param _name The name of the FoundationID to lookup
+     @return an array of addresses associated with the FoundationID
   */
-
   function resolveToAddresses(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (address[]) {
-    return nameToId[_name].ownedAddresses;
+    return afd.idOwnedAddresses(_name);
   }
 
 
   function getAddrIndex(bytes32 _name, uint index) public nameExists(_name) nameActive(_name) constant returns (address) {
-    require(index<nameToId[_name].ownedAddresses.length);
-    return nameToId[_name].ownedAddresses[index];
+    require( index < afd.idOwnedAddresses(_name).length );
+    return afd.idOwnedAddresses(_name)[index];
   }
 
-
-     /**
-	@notice Gets length of address array for foundationId
-        @param _name the name of the foundationid
-        @return the number of addresses associated with a user
+  /**
+     @notice Gets length of address array for foundationId
+     @param _name the name of the foundationid
+     @return the number of addresses associated with a user
   */
-
   function getAddrLength(bytes32 _name) public nameExists(_name) nameActive(_name) constant returns (uint) {
-    return nameToId[_name].ownedAddresses.length;
+    return afd.idOwnedAddresses(_name).length;
   }
 
 
   /**
-	@notice Returns whether an address has a FoundationId associated with it or not.
-        @param _addr the address to lookup
-        @return true if there is a foundationid for the address, false otherwise
-
-   */
-
+     @notice Returns whether an address has a FoundationId associated with it or not.
+     @param _addr the address to lookup
+     @return true if there is a foundationid for the address, false otherwise
+  */
   function hasName(address _addr) public constant returns (bool) {
-    if (compare(addrToName[_addr], bytes32(0)) != 0) {
+    if (compare(afd.getAddrToName(_addr), bytes32(0)) != 0)
       return true;
-    }
-    else {
+    else
       return false;
-    }
   }
 
-   /**
-	@notice Checks whether an address is associated with a FoundationID
-	@param _addr The address of the to check
-	@param _name The name of the FoundationID
-        @return returns true of _addr and _name are associated with each other
 
+  /**
+     @notice Checks whether an address is associated with a FoundationID
+     @param _addr The address of the to check
+     @param _name The name of the FoundationID
+     @return returns true of _addr and _name are associated with each other
   */
-
   function isUnified(address _addr, bytes32 _name) public nameActive(_name) constant returns (bool) {
-    return idEq(addrToName[_addr], _name);
+    return idEq(afd.getAddrToName(_addr), _name);
   }
 
-   /**
-	@notice Set the amount of Wei required to extend a FoundationID for 1 year.
-        @param _weiToExtend The amount of wei needed to extend the id one year from now
+  /**
+     @notice Set the amount of Wei required to extend a FoundationID for 1 year.
+     @param _weiToExtend The amount of wei needed to extend the id one year from now
   */
-
-
   function alterWeiToExtend(uint _weiToExtend) public isAdmin {
     weiToExtend = _weiToExtend;
   }
+
 
   /**
      @notice Set the amount of Wei required to create a new id
@@ -244,11 +224,9 @@ contract Foundation {
     weiToCreate = _weiToCreate;
   }
 
-
-    /**
-	@notice Get the amount of Wei required to extend a FoundationID for 1 year.
-    */
-
+  /**
+     @notice Get the amount of Wei required to extend a FoundationID for 1 year.
+  */
   function getWeiToExtend() public constant returns (uint weiAmount) {
     return weiToExtend;
   }
@@ -260,58 +238,52 @@ contract Foundation {
     return weiToCreate;
   }
 
-
-   /**
-	@notice Extends a FoundationID for 1 year if the exact amount for the fee is sent.
-	@param _name the name of the ID to extend.
+  /**
+     @notice Extends a FoundationID for 1 year if the exact amount for the fee is sent.
+     @param _name the name of the ID to extend.
   */
-
   //msg.value
   //adds a year to the end of now, if the balance is right
   function extendIdOneYear(bytes32 _name) public payable extender nameExists(_name) {
     if ( msg.value != weiToExtend ) revert();
     adminBalanceWei += msg.value;
-    nameToId[_name].activeUntil = now + extensionPeriod;
+    afd.setIdActiveUntil(now + extensionPeriod);
   }
 
-   /**
-	@notice Deposit Wei into the FoundationID.  This deposit is then withdrawable by any address associated with that FoundationID
+  /**
+     @notice Deposit Wei into the FoundationID.  This deposit is then withdrawable by any address associated with that FoundationID
   */
-
-  //removed nameExists(addrToName[msg.sender])
-  //removed isOwner(addrToName[msg.sender])
   //should this use safeMath add?
   function depositWei() public payable {
-    nameToId[addrToName[msg.sender]].depositBalanceWei += msg.value;
+    bytes32 user = afd.getAddrToName(msg.sender);
+    uint dbw = afd.idDepositBalanceWei(user);
+    afd.setDepositBalanceWei(user, dbw + msg.value);
   }
 
-   /**
-	@notice get the amount of wei on deposit at a given FoundationID
-	@param _name the name of the FoundationID.
+  /**
+     @notice get the amount of wei on deposit at a given FoundationID
+     @param _name the name of the FoundationID.
   */
-
   function getDepositWei(bytes32 _name) public nameExists(_name) constant returns (uint) {
-    return nameToId[_name].depositBalanceWei;
+    return afd.idDepositBalanceWei(_name);
   }
 
   function getExpirationDate(bytes32 _name) constant returns (uint) {
-    return nameToId[_name].activeUntil;
+    return afd.idActiveUntil(_name);
   }
-
 
   function initNameAddrPair(bytes32 _name, address _addr) private {
-    addrToName[_addr] = _name;
+    afd.setAddrToName(_name, _addr);
   }
 
-   /**
-	@dev Start creating a new FoundationID
-        @param _name foundationId name
-        @param _addr the address
+  /**
+     @dev Start creating a new FoundationID
+     @param _name foundationId name
+     @param _addr the address
   */
   function linkAddrToId(bytes32 _name, address _addr) private {
-   // uint freeIndex = findFree(_name);
-    nameToId[_name].ownedAddresses.push(_addr);
-    nameToId[_name].activeAddr[_addr] = true;
+    afd.pushIdOwnedAddresses(_name, _addr);
+    afd.setIdActiveAddr(_name, _addr, true);
   }
 
   /**
@@ -323,53 +295,51 @@ contract Foundation {
   function createIdPrivate(bytes32 _name, address _addr, uint _activeUntil) isNewName(_name) private {
     initNameAddrPair(_name, _addr);
     //initialized in an inactive state
-    nameToId[_name].initialized = true;
-    nameToId[_name].activeUntil = _activeUntil;
-    nameToId[_name].name = _name;
-    nameToId[_name].depositBalanceWei = 0;
+    afd.setIdInitialized(_name, true);
+    afd.setIdActiveUntil(_name, _activeUntil);
+    afd.setIdName(_name, _name);
+    afd.setIdDepositBalanceWei(_name, 0);
     linkAddrToId(_name, _addr);
   }
 
-   /**
-	@notice create a new FoundationID.
-        @param _name the name of the new FoundationID
+  /**
+     @notice create a new FoundationID.
+     @param _name the name of the new FoundationID
   */
-
-
   function createId(bytes32 _name) public idCreator isUnused(msg.sender) isNewName(_name) payable {
     uint _activeUntil = now + extensionPeriod;
     createIdPrivate(_name, msg.sender, _activeUntil);
   }
 
-   /**
-	@notice Add an address to a FoundationID, must be added from existing address associated with the FoundationID
-        @param _addr the new address to add.
-  */
 
+  /**
+     @notice Add an address to a FoundationID, must be added from existing address associated with the FoundationID
+     @param _addr the new address to add.
+  */
   function addPendingUnification(address _addr) public isUnused(_addr) {
-    nameToId[addrToName[msg.sender]].pendingOwned = _addr;
-    pendings[_addr] = addrToName[msg.sender];
+    bytes32 user = afd.getAddrToName(msg.sender);
+    afd.setIdPendingOwned(user, _addr);
+    afd.setPendings(user, _addr);
   }
 
-   /**
-	@notice Confirm an address to be added to a FoundationID
-        @dev This must be confirmed by the pending address.
-        @param _name the name of the FoundationID to add the address to.
-  */
 
+  /**
+     @notice Confirm an address to be added to a FoundationID
+     @dev This must be confirmed by the pending address.
+     @param _name the name of the FoundationID to add the address to.
+  */
   function confirmPendingUnification(bytes32 _name) public isUnused(msg.sender) {
-    if ( nameToId[_name].pendingOwned != msg.sender ) revert();
+    if ( afd.idPendingOwned(_name) != msg.sender ) revert();
     initNameAddrPair(_name, msg.sender);
     linkAddrToId(_name, msg.sender);
-    nameToId[_name].pendingOwned = 0;
-    pendings[msg.sender] = bytes32("");
+    afd.clearIdPendingOwned(_name);
+    afd.setIdPendingOwned(bytes32(0), msg.sender);
   }
 
-   /**
-        @dev Returns the address, if any, up for unification
-        @param _name the name of the FoundationID to query
-   */
-
+  /**
+     @dev Returns the address, if any, up for unification
+     @param _name the name of the FoundationID to query
+  */
   function sentPending(bytes32 _name) constant returns (address) {
     return nameToId[_name].pendingOwned;
   }

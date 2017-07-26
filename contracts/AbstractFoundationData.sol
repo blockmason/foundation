@@ -6,6 +6,7 @@ contract AbstractFoundationData {
   function setIdInitialized(bytes32 fId, bool init);
   function pushIdOwnedAddresses(bytes32 fId, address _addr);
   function setIdPendingOwned(bytes32 fId, address _pendingAddr);
+  function clearIdPendingOwned(bytes32 fId);
   function setIdDepositBalanceWei(bytes32 fId, uint wei);
   function setIdActiveUntil(bytes32 fId, unit _activeUntil);
   function setIdName(bytes32 fId, bytes32 val);
