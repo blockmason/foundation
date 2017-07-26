@@ -16,6 +16,7 @@ module.exports = function(deployer, network, accounts) {
                     weiToExtend, weiToCreate,
                     {from: accounts[0], gas: 4390000,
                      gasPrice: 10000000000});
+    //todo: extend the above to call setFoundationContract in FoundationData
 
     /*
     deployer.deploy(FoundationData, adminId,
