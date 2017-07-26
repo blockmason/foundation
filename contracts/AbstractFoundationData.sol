@@ -2,6 +2,9 @@ pragma solidity ^0.4.11;
 
 contract AbstractFoundationData {
 
+  function getAdmin() constant returns (bytes32);
+  function getFoundationContract() constant returns (address);
+
   /*  Setters  */
   function setIdInitialized(bytes32 fId, bool init);
   function pushIdOwnedAddresses(bytes32 fId, address _addr);
@@ -26,7 +29,6 @@ contract AbstractFoundationData {
   function idActiveUntil(bytes32 fId) constant returns (uint timestamp);
   function idIsActiveAddr(bytes32 fId, address _addr) constant returns (bool);
 
-  function getAdmin() constant returns (bytes32);
   function getPending(address _addr) constant returns (bytes32);
   function getAddrToName(address _addr) constant returns (bytes32);
 

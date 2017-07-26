@@ -52,6 +52,10 @@ contract FoundationData {
     foundationContract = fc;
   }
 
+  function getFoundationContract() constant returns (address) {
+    return foundationContract;
+  }
+
   /*  Setters  */
   function setIdInitialized(bytes32 fId, bool init) public isFoundation {
     nameToId[fId].initialized = init;
