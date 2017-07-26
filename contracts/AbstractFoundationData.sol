@@ -12,6 +12,8 @@ contract AbstractFoundationData {
   function setIdName(bytes32 fId, bytes32 val);
   function setIdActiveAddr(bytes32 fId, address _addr, bool val);
 
+  function deleteAddrAtIndex(bytes32 fId, uint index);
+
   /*   mapping setters  */
   function setPendings(bytes32 _name, address _addr);
   function setAddrToName(bytes32 _name, address _addr);

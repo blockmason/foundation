@@ -85,6 +85,10 @@ contract FoundationData {
     nameToId[fId].activeAddr[_addr] = val;
   }
 
+  function deleteAddrAtIndex(bytes32 fId, uint index) {
+    delete nameToId[fId].ownedAddresses[index];
+  }
+
   /*   mapping setters   */
   function setPendings(bytes32 _name, address _addr) public isFoundation {
     pendings[_addr] = _name;

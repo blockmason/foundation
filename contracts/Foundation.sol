@@ -341,42 +341,40 @@ contract Foundation {
      @param _name the name of the FoundationID to query
   */
   function sentPending(bytes32 _name) constant returns (address) {
-    return nameToId[_name].pendingOwned;
+    return afd.idPendingOwned(_name);
   }
 
   function todoPending(address _addr) constant returns (bytes32) {
-    return pendings[_addr];
+    return afd.getPending(_addr);
   }
 
-   /**
-        @dev Finds the index of an address in the user's foundationId ownedAddresses
-        @param _name the name of the FoundationID to search through.
-        @param _addr the address to find.
 
+  /**
+     @dev Finds the index of an address in the user's foundationId ownedAddresses
+     @param _name the name of the FoundationID to search through.
+     @param _addr the address to find.
   */
-
   function findAddr(bytes32 _name, address _addr) private constant returns(uint)  {
     uint foundAddrIndex;
-    for (uint i = 0; i <= nameToId[_name].ownedAddresses.length; i ++) {
-       if (nameToId[_name].ownedAddresses[i]==_addr) {
-         foundAddrIndex=i;
+    for (uint i = 0; i <= afd.idOwnedAddresses(_name).length; i ++) {
+      if ( afd.idOwnedAddresses(_name)[i] == _addr) {
+         foundAddrIndex = i;
          return foundAddrIndex;
-       }
-     }
+      }
+    }
     revert(); // something went wrong if it's not found but passed previous modifiers
   }
 
-   /**
-	@notice Deletes an address
-        @dev Must have at least 2 addresses otherwise throws
-        @param _addr the address to delete
+
+  /**
+     @notice Deletes an address
+     @dev Must have at least 2 addresses otherwise throws
+     @param _addr the address to delete
   */
-
-
-  function deleteAddr(address _addr) public nameExists(addrToName[_addr]) isOwner(addrToName[_addr]) hasTwoAddress(addrToName[_addr]) {
-    bytes32 idName=addrToName[msg.sender];
+  function deleteAddr(address _addr) public nameExists(afd.getAddrToName(_addr)) isOwner(afd.getAddrToName(_addr)) hasTwoAddress(afd.getAddrToName(_addr)) {
+    bytes32 idName = afd.getAddrToName(msg.sender);
+    uint addrIndex = findAddr(idName, _addr);
     FoundationId foundId = nameToId[idName];
-    uint addrIndex=findAddr(idName, _addr);
     delete foundId.ownedAddresses[addrIndex];
   }
 
