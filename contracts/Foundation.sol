@@ -1,5 +1,7 @@
 pragma solidity ^0.4.11;
 
+import "./AbstractFoundationData.sol";
+
 /**
 @title Foundation
 @author Timothy Galebach, Jared Bowie
@@ -8,7 +10,9 @@ pragma solidity ^0.4.11;
 
 contract Foundation {
 
+  AbstractFoundationData afd;
   bytes32 admin; //the master id associated with the admin
+  address masterAddr; //used only once, to set FoundationData address
   uint weiToExtend; //amount of eth needed to extend a year
   uint weiToCreate;
   uint adminBalanceWei;
@@ -20,10 +24,8 @@ contract Foundation {
 	@notice Checks whether a name is active according to it's activeUntil parameter.
 	@param _name The name of the ID
   */
-
-
   modifier nameActive(bytes32 _name) {
-    if ( nameToId[_name].activeUntil < now ) revert();
+    if ( afd.idActiveUntil(_name) < now ) revert();
     _;
   }
 
@@ -32,9 +34,8 @@ contract Foundation {
 	@param _name The name of the ID.
 	@param _addr The address to check.
   */
-
   modifier isNewNameAddrPair(bytes32 _name, address _addr) {
-    if ( idEq(_name, addrToName[_addr]) ) revert(); //throw error if pair exists
+    if ( idEq(_name, afd.getAddrToName(_addr)) ) revert(); //throw error if pair exists
     _;
   }
 
@@ -43,14 +44,13 @@ contract Foundation {
 	@notice Checks if this address is associated with any id already.
 	@param _addr The address to check.
   */
-
   modifier isUnused(address _addr) {
-    if ( addrToName[_addr] != bytes32("") ) revert();
+    if ( afd.getAddrToName(_addr) != bytes32("") ) revert();
     _;
   }
 
   modifier isNewName(bytes32 _name) {
-    if ( nameToId[_name].initialized ) revert();
+    if ( afd.idInitialized(_name) revert();
     _;
   }
 
@@ -60,7 +60,7 @@ contract Foundation {
   */
 
   modifier nameExists(bytes32 _name) {
-    if ( ! nameToId[_name].initialized ) revert();
+    if ( ! afd.idInitialized(_name) ) revert();
     _;
   }
 
@@ -132,13 +132,20 @@ contract Foundation {
 
   */
 
-  //initializes contract with msg.sender as the first admin address
+  //initializes contract with msg.sender as the first admin address and as master
   function Foundation(bytes32 _adminName, uint _weiToExtend, uint _weiToCreate) {
+    masterAddr = msg.sender;
     admin = _adminName;
     createIdPrivate(_adminName, msg.sender, (2**256 - 1));
     weiToExtend = _weiToExtend;
     weiToCreate = _weiToCreate;
     maxNumToDeactivateAddr = 1;
+  }
+
+
+  function setFoundationData(address foundationDataContract) public {
+    if ( msg.sender != masterAddr) revert();
+    afd = AbstractFoundationData(foundationDataContract);
   }
 
 

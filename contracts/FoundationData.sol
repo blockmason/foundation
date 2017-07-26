@@ -60,7 +60,7 @@ contract FoundationData {
     nameToId[fId].activeAddr[_addr] = val;
   }
 
-  /*   mapping setters  */
+  /*   mapping setters   */
   function setPendings(bytes32 _name, address _addr) public isFoundation {
     pendings[_addr] = _name;
   }
@@ -93,4 +93,13 @@ contract FoundationData {
   function idIsActiveAddr(bytes32 fId, address _addr) constant returns (bool) {
     return nameToId[fid].activeAddr[_addr];
   }
+
+  function getPending(address _addr) constant returns (bytes32) {
+    return pendings[_addr];
+  }
+
+  function getAddrToName(address _addr) constant returns (bytes32) {
+    return addrToName[_addr];
+  }
+
 }
