@@ -14,21 +14,7 @@ contract Foundation {
   uint adminBalanceWei;
   uint8 maxNumToDeactivateAddr;
   uint extensionPeriod = 60*60*24*365;
-  mapping ( address => bytes32 ) pendings;
   //  uint addrSize=50;
-
-  struct FoundationId {
-    bool initialized;
-    address[] ownedAddresses;
-    address pendingOwned; //an address requiring confirmation to add to owned
-    uint activeUntil; //the date/time when this id deactivates
-    uint depositBalanceWei; //how much deposit this owner has
-    bytes32 name;
-    mapping ( address => bool ) activeAddr;
-  }
-
-  mapping ( address => bytes32 )  addrToName;
-  mapping ( bytes32  => FoundationId ) nameToId;
 
   /**
 	@notice Checks whether a name is active according to it's activeUntil parameter.
