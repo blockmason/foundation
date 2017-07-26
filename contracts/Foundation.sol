@@ -374,8 +374,7 @@ contract Foundation {
   function deleteAddr(address _addr) public nameExists(afd.getAddrToName(_addr)) isOwner(afd.getAddrToName(_addr)) hasTwoAddress(afd.getAddrToName(_addr)) {
     bytes32 idName = afd.getAddrToName(msg.sender);
     uint addrIndex = findAddr(idName, _addr);
-    FoundationId foundId = nameToId[idName];
-    delete foundId.ownedAddresses[addrIndex];
+    afd.deleteAddrAtIndex(addrIndex);
   }
 
 
@@ -384,7 +383,6 @@ contract Foundation {
         @param amount the amount to withdraw in wei
         @return success if operation was successful or not
   */
-
   function withdraw(uint amount) public isAdmin returns (bool success) {
     if ( adminBalanceWei < amount ) revert();
     adminBalanceWei -= amount;
@@ -401,11 +399,12 @@ contract Foundation {
   //changed require to check if balance is greater than or equal to the amount
   // should use SafeMath?
   // should have a check on the size of the integer ala openzeppelin transfer functions?
-
   function withdrawDeposit(uint amount) public returns (bool success) {
     require (amount > 0);
-    require ( nameToId[addrToName[msg.sender]].depositBalanceWei >= amount );
-    nameToId[addrToName[msg.sender]].depositBalanceWei -= amount;
+    bytes32 user = afd.getAddrToName(msg.sender);
+    uint bAmount = afd.idDepositBalanceWei(user);
+    require ( bAmount >= amount );
+    afd.setIdDepositBalanceWei(user, bAmount - amount);
     return msg.sender.send(amount);
   }
 

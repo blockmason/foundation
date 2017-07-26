@@ -7,8 +7,8 @@ contract AbstractFoundationData {
   function pushIdOwnedAddresses(bytes32 fId, address _addr);
   function setIdPendingOwned(bytes32 fId, address _pendingAddr);
   function clearIdPendingOwned(bytes32 fId);
-  function setIdDepositBalanceWei(bytes32 fId, uint wei);
-  function setIdActiveUntil(bytes32 fId, unit _activeUntil);
+  function setIdDepositBalanceWei(bytes32 fId, uint weiAmount);
+  function setIdActiveUntil(bytes32 fId, uint _activeUntil);
   function setIdName(bytes32 fId, bytes32 val);
   function setIdActiveAddr(bytes32 fId, address _addr, bool val);
 
