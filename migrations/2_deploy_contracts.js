@@ -12,18 +12,21 @@ module.exports = function(deployer, network, accounts) {
                     {from: accounts[0], gasPrice: 100000000000,
                      gas: 3000000 });
      */
-    deployer.deploy(Foundation, foundationDataAddr, adminId,
+    /*deployer.deploy(Foundation, foundationDataAddr, adminId,
                     weiToExtend, weiToCreate,
                     {from: accounts[0], gas: 4390000,
-                     gasPrice: 10000000000});
+                     gasPrice: 10000000000});*/
+
     //todo: extend the above to call setFoundationContract in FoundationData
 
-    /*
+
+    //// for testrpc
+
     deployer.deploy(FoundationData, adminId,
                     {from: accounts[0]}).then(function() {
         return deployer.deploy(Foundation, FoundationData.address, adminId,
                                weiToExtend, weiToCreate,
                                {from: accounts[0]});
     });
-*/
+
 };
