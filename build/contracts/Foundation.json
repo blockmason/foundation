@@ -444,7 +444,7 @@
     "3": {
       "links": {},
       "events": {},
-      "updated_at": 1501222771765,
+      "updated_at": 1501250024934,
       "address": "0x334c1e331ffca04b1aa902347994ddcb42e84858"
     },
     "1500266457630": {
@@ -488,8 +488,14 @@
       "links": {},
       "address": "0x1c860055766844320466e66b41891e4814b7c089",
       "updated_at": 1501223498490
+    },
+    "1501232485436": {
+      "events": {},
+      "links": {},
+      "address": "0xad974f9245fac5a1029190c2875a401042ff6bcf",
+      "updated_at": 1501232654196
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1501223498490
+  "updated_at": 1501250024934
 }

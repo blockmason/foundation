@@ -1,7 +1,6 @@
 var FoundationData = artifacts.require("./FoundationData.sol");
 var Foundation = artifacts.require("./Foundation.sol");
 
-var foundationDataAddr = "0xba6602e73a33e41ea4c4ed5bc24c7e2303090610";
 var adminId = "timgalebach";
 var weiToExtend = 0;
 var weiToCreate = 0;
@@ -11,6 +10,8 @@ var fiveGwei = 5000000000; //9 zeros
 var tenGwei = 10000000000; //10 zeros
 var contractGasLimit = 4390000; //4.39M
 var fnGasLimit = 1000000; //1.0M
+
+var metamaskAddr = "0x406Dd5315e6B63d6F1bAd0C4ab9Cd8EBA6Bb1bD2";
 
 module.exports = function(deployer, network, accounts) {
     //// for testrpc
@@ -58,7 +59,11 @@ module.exports = function(deployer, network, accounts) {
         }).then(function(tx) {
             return instance.getFoundationContract.call();
         }).then(function(v) {
-            console.log(v.valueOf());
+            return Foundation.deployed();
+        }).then(function(f) {
+            instance = f;
+            return instance.addPendingUnification(metamaskAddr, fnData);
         });
     }
+
 };
