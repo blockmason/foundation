@@ -118,7 +118,6 @@ contract Foundation {
      @param _adminName The name of the ID to be the admin ID
      @param _weiToExtend The amount in wei required to extend the validity of a FoundationID for 1 year.
   */
-  //initializes contract with msg.sender as the first admin address
   function Foundation(address foundationDataContract, bytes32 _adminName, uint _weiToExtend, uint _weiToCreate) {
     afd = AbstractFoundationData(foundationDataContract);
     //admin should already be created in FoundationData

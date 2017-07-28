@@ -6,9 +6,8 @@ truffle test --network testrpc test/foundation-testrpc.js
 
 **FoundationData Ropsten
 0xba6602e73a33e41ea4c4ed5bc24c7e2303090610
---0x5c98fbbdba76a44475e831cf84202f596da0f007
 **Foundation Ropsten
-0x74bec563091b06d9f53b8a3237badf73ff81e7c7
+0x94bee2ff9e62343f82f4465eee54d0d3540bb7f4
 
 **Deployment Steps
 1. Deploy FoundationData
