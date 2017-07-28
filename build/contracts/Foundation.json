@@ -486,10 +486,10 @@
     "1501210434557": {
       "events": {},
       "links": {},
-      "address": "0x8118ecd5fc795d176d8f4852b7d163a6154b11b7",
-      "updated_at": 1501211997908
+      "address": "0x1b6bac0fbcd3072b895fd568523773120512efb7",
+      "updated_at": 1501220849247
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1501211997908
+  "updated_at": 1501220849247
 }

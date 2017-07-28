@@ -7,10 +7,23 @@ var user1 = "timg";
 var user2 = "jaredb";
 var weiToExtend = 0;
 var weiToCreate = 0;
+var instance;
 
 module.exports = function(deployer, network, accounts) {
     //// for testrpc
-    deployer.deploy(FoundationData, adminId, {from: accounts[0]}).then(function() {
-        return deployer.deploy(Foundation, FoundationData.address, adminId, weiToExtend, weiToCreate, {from: accounts[0]});
-    });
+    if ( network == "testrpc" ) {
+        deployer.deploy(FoundationData, adminId, {from: accounts[0]}).then(function() {
+            return deployer.deploy(Foundation, FoundationData.address, adminId, weiToExtend, weiToCreate, {from: accounts[0]});
+        });
+        deployer.then(function() {
+            return FoundationData.deployed();
+        }).then(function(fdi) {
+            instance = fdi;
+            return instance.setFoundationContract(Foundation.address);
+        }).then(function(tx) {
+            return instance.getFoundationContract.call();
+        }).then(function(v) {
+            console.log(v.valueOf());
+        });
+    }
 };
