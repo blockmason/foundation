@@ -444,8 +444,8 @@
     "3": {
       "links": {},
       "events": {},
-      "updated_at": 1501064557710,
-      "address": "0x74bec563091b06d9f53b8a3237badf73ff81e7c7"
+      "updated_at": 1501222771765,
+      "address": "0x334c1e331ffca04b1aa902347994ddcb42e84858"
     },
     "1500266457630": {
       "events": {},
@@ -491,5 +491,5 @@
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1501220849247
+  "updated_at": 1501222771765
 }
