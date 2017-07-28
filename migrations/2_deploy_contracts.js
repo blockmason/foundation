@@ -15,6 +15,11 @@ var fnGasLimit = 1000000; //1.0M
 module.exports = function(deployer, network, accounts) {
     //// for testrpc
     if ( network == "testrpc" ) {
+        var user2 = "timg";
+        var user3 = "jaredb";
+        var account2 = accounts[1];
+        var account3 = accounts[2];
+
         deployer.deploy(FoundationData, adminId, {from: accounts[0]}).then(function() {
             return deployer.deploy(Foundation, FoundationData.address, adminId, weiToExtend, weiToCreate, {from: accounts[0]});
         });
@@ -24,9 +29,12 @@ module.exports = function(deployer, network, accounts) {
             instance = fdi;
             return instance.setFoundationContract(Foundation.address);
         }).then(function(tx) {
-            return instance.getFoundationContract.call();
-        }).then(function(v) {
-            console.log(v.valueOf());
+            return Foundation.deployed();
+        }).then(function(fi) {
+            instance = fi;
+            return instance.createId(user2, {from: account2});
+        }).then(function(tx) {
+            return instance.createId(user3, {from: account3});
         });
     }
 
