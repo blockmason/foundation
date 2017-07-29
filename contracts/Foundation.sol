@@ -119,6 +119,7 @@ contract Foundation {
      @param _weiToExtend The amount in wei required to extend the validity of a FoundationID for 1 year.
   */
   function Foundation(address foundationDataContract, bytes32 _adminName, uint _weiToExtend, uint _weiToCreate) {
+
     afd = AbstractFoundationData(foundationDataContract);
     //admin should already be created in FoundationData
     if ( ! idEq(afd.getAdmin(), _adminName) ) revert();
@@ -126,6 +127,7 @@ contract Foundation {
     weiToExtend = _weiToExtend;
     weiToCreate = _weiToCreate;
     maxNumToDeactivateAddr = 1;
+
   }
 
 
@@ -313,6 +315,7 @@ contract Foundation {
   function createId(bytes32 _name) public idCreator isUnused(msg.sender) isNewName(_name) payable {
     uint _activeUntil = now + extensionPeriod;
     createIdPrivate(_name, msg.sender, _activeUntil);
+    afd.setPendings(bytes32(0), msg.sender);
   }
 
 
@@ -361,6 +364,7 @@ contract Foundation {
     bytes32 user = afd.getAddrToName(msg.sender);
     uint addrIndex = afd.findAddr(user, _addr);
     afd.deleteAddrAtIndex(user, addrIndex);
+    afd.setPendings(bytes32(0), _addr);
   }
 
    /**

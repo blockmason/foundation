@@ -39,6 +39,7 @@ module.exports = function(deployer, network, accounts) {
         });
     }
 
+    //deploy from scratch
     if ( network == "ropsten" ) {
         var contractData =  {from: accounts[0],
                              gas: contractGasLimit,
@@ -65,5 +66,26 @@ module.exports = function(deployer, network, accounts) {
             return instance.addPendingUnification(metamaskAddr, fnData);
         });
     }
+
+    /*
+    //when FoundationData is already deployed
+    if ( network == "ropsten" ) {
+        var foundationDataContract = "0x38b4939013b9d299a78e7cd4fc7de58c48e4b261";
+        var contractData =  {from: accounts[0],
+                             gas: contractGasLimit,
+                             gasPrice: fiveGwei};
+        var fnData = {from: accounts[0],
+                      gas: fnGasLimit,
+                      gasPrice: fiveGwei};
+
+        deployer.deploy(Foundation, foundationDataContract, adminId,
+                        weiToExtend, weiToCreate, contractData).then(function() {
+                           return FoundationData.at(foundationDataContract);
+        }).then(function(fdi) {
+            instance = fdi;
+            return instance.setFoundationContract(Foundation.address, fnData);
+        });
+    }
+*/
 
 };

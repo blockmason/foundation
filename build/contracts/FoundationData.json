@@ -453,8 +453,8 @@
     "3": {
       "links": {},
       "events": {},
-      "updated_at": 1501250024933,
-      "address": "0x38b4939013b9d299a78e7cd4fc7de58c48e4b261"
+      "updated_at": 1501303727226,
+      "address": "0xb96e32c8ec5771a8a86256223e110af15c0e2548"
     },
     "1501058640685": {
       "events": {},
@@ -482,5 +482,5 @@
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1501250024933
+  "updated_at": 1501303727226
 }
