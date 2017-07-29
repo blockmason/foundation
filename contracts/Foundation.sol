@@ -337,7 +337,7 @@ contract Foundation {
     initNameAddrPair(_name, msg.sender);
     linkAddrToId(_name, msg.sender);
     afd.clearIdPendingOwned(_name);
-    afd.setIdPendingOwned(bytes32(0), msg.sender);
+    afd.setPendings(bytes32(0), msg.sender);
   }
 
   /**
