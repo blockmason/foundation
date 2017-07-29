@@ -348,7 +348,11 @@ contract Foundation {
      @param _name the name of the FoundationID to query
   */
   function sentPending(bytes32 _name) constant returns (address) {
-    return afd.idPendingOwned(_name);
+    address pending = afd.idPendingOwned(_name);
+    //don't show address if it's already in useby another name
+    if ( ! idEq(afd.getAddrToName(pending), bytes32(0)) )
+      return 0;
+    else return pending;
   }
 
   function todoPending(address _addr) constant returns (bytes32) {
