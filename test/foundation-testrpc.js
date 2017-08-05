@@ -14,6 +14,8 @@ var b2s = function(bytes) {
 };
 
 contract('Foundation', function(accounts) {
+   // console.log(b2s("0x74696d74696d6500000000000000000000000000000000000000000000000000"));
+
     var name1 = "timtime";
     var name2 = "jbyo";
     var adminId = "timgalebach";
@@ -119,6 +121,34 @@ contract('Foundation', function(accounts) {
             return u.areSameId.call(account2, account3);
         }).then(function(res) {
             assert.equal(res.valueOf(), true, "account1 and account2 aren't added to id");
+        });
+    });
+
+
+    it("pendings clears when a new address is added pending to an id", async function() {
+        foundData = await FoundationData.new(adminId);
+        var ns;
+        return Foundation.new(foundData.address, adminId, weiToExtend, weiToCreate).then(function(instance) {
+            u = instance;
+            return foundData.setFoundationContract(u.address);
+        }).then(function(tx) {
+            return u.createId(name1, {from: account2, value: weiToCreate});
+        }).then(function(tx) {
+            return u.extendIdOneYear(name1, {from: account2, value: weiToExtend})
+        }).then(function(tx) {
+            return u.addPendingUnification(account3, {from: account2});
+        }).then(function(tx) {
+            return u.addPendingUnification(account4, {from: account2});
+        }).then(function(tx) {
+            return u.todoPending.call(account3);
+        }).then(function(res) {
+            assert.equal(b2s(res.valueOf()), "", "account3 should have no todoPending");
+            return u.todoPending.call(account4);
+        }).then(function(res) {
+            assert.equal(b2s(res.valueOf()), name1, "account4 should have name1 pending");
+            return u.sentPending.call(name1);
+        }).then(function(res) {
+            assert.equal(res.valueOf(), account4, "account4 should be sentPending from name1");
         });
     });
 

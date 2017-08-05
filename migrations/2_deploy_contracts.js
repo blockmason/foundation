@@ -18,8 +18,10 @@ module.exports = function(deployer, network, accounts) {
     if ( network == "testrpc" ) {
         var user2 = "timg";
         var user3 = "jaredb";
+        var user4 = "lukez";
         var account2 = accounts[1];
         var account3 = accounts[2];
+        var account4 = accounts[3];
 
         deployer.deploy(FoundationData, adminId, {from: accounts[0]}).then(function() {
             return deployer.deploy(Foundation, FoundationData.address, adminId, weiToExtend, weiToCreate, {from: accounts[0]});
@@ -36,6 +38,8 @@ module.exports = function(deployer, network, accounts) {
             return instance.createId(user2, {from: account2});
         }).then(function(tx) {
             return instance.createId(user3, {from: account3});
+        }).then(function(tx) {
+            return instance.createId(user4, {from: account4});
         });
     }
 
@@ -67,10 +71,9 @@ module.exports = function(deployer, network, accounts) {
         });
     }
 
-    /*
     //when FoundationData is already deployed
-    if ( network == "ropsten" ) {
-        var foundationDataContract = "0x38b4939013b9d299a78e7cd4fc7de58c48e4b261";
+    if ( network == "ropstenNoData" ) {
+        var foundationDataContract = "0x867ef1f9e431394e05be46df1df06ba73e85fa93";
         var contractData =  {from: accounts[0],
                              gas: contractGasLimit,
                              gasPrice: fiveGwei};
@@ -86,6 +89,5 @@ module.exports = function(deployer, network, accounts) {
             return instance.setFoundationContract(Foundation.address, fnData);
         });
     }
-*/
 
 };

@@ -325,6 +325,10 @@ contract Foundation {
   */
   function addPendingUnification(address _addr) public isUnused(_addr) {
     bytes32 user = afd.getAddrToName(msg.sender);
+    //check if there's already a pending owned -- unset its pendings if so
+    if ( afd.idPendingOwned(user) != 0 )
+      afd.setPendings(bytes32(0), afd.idPendingOwned(user));
+
     afd.setIdPendingOwned(user, _addr);
     afd.setPendings(user, _addr);
   }
