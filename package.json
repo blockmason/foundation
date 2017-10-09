@@ -1,0 +1,36 @@
+{
+  "name": "foundation",
+  "version": "1.0.0",
+  "description": "name unification",
+  "main": "truffle.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blockmason/foundation.git"
+  },
+  "keywords": [
+    "ethereum",
+    "blockmason",
+    "credit",
+    "protocol"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blockmason/foundation/issues"
+  },
+  "homepage": "https://github.com/blockmason/foundation#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^2.0.1",
+    "ethereumjs-testrpc": "4.1.1",
+    "truffle": "3.4.9"
+  }
+}
