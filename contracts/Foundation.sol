@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-import "./AbstractFoundationData.sol";
+import "./FoundationData.sol";
 
 /**
 @title Foundation
@@ -10,7 +10,7 @@ import "./AbstractFoundationData.sol";
 
 contract Foundation {
 
-  AbstractFoundationData afd;
+  FoundationData afd;
   bytes32 admin; //the master id associated with the admin
   uint weiToExtend; //amount of eth needed to extend a year
   uint weiToCreate;
@@ -120,7 +120,7 @@ contract Foundation {
   */
   function Foundation(address foundationDataContract, bytes32 _adminName, uint _weiToExtend, uint _weiToCreate) {
 
-    afd = AbstractFoundationData(foundationDataContract);
+    afd = FoundationData(foundationDataContract);
     //admin should already be created in FoundationData
     if ( ! idEq(afd.getAdmin(), _adminName) ) revert();
     admin = _adminName;
